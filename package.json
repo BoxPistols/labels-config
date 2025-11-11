@@ -23,20 +23,25 @@
       "types": "./dist/github/index.d.ts"
     }
   },
+  "bin": {
+    "labels-config": "./dist/cli.js"
+  },
   "files": [
     "dist",
-    "schemas",
-    "templates"
+    "templates",
+    "docs"
   ],
   "scripts": {
-    "build": "tsup src/index.ts src/config/index.ts src/github/index.ts --format cjs,esm --dts",
-    "build:umd": "tsup src/index.ts --format umd --dts",
+    "build": "tsup src/index.ts src/config/index.ts src/github/index.ts src/cli.ts --format cjs,esm --dts --shims",
+    "build:umd": "tsup src/index.ts --format umd --dts --globalName LabelsConfig",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
     "lint": "eslint src --fix",
-    "cli": "tsx src/cli.ts"
+    "cli": "tsx src/cli.ts",
+    "prepublishOnly": "npm run build && npm run build:umd"
   },
   "keywords": [
     "labels",
