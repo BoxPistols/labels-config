@@ -22,7 +22,7 @@ const hexColorSchema = z
         .join('')
     }
     return color.toLowerCase()
-  }) as z.ZodType<HexColor>
+  }) as unknown as z.ZodType<HexColor>
 
 /**
  * Label configuration schema

@@ -72,15 +72,18 @@ async function validateCommand(): Promise<void> {
       console.log('✓ Configuration is valid')
     } else {
       console.log('✗ Validation errors found:')
-      if (result.errors.duplicateNames?.length > 0) {
-        console.log(`  - Duplicate names: ${result.errors.duplicateNames.join(', ')}`)
+      const duplicateNames = (result.errors as any).duplicateNames
+      if (duplicateNames && duplicateNames.length > 0) {
+        console.log(`  - Duplicate names: ${duplicateNames.join(', ')}`)
       }
-      if (result.errors.duplicateColors?.length > 0) {
-        console.log(`  - Duplicate colors: ${result.errors.duplicateColors.join(', ')}`)
+      const duplicateColors = (result.errors as any).duplicateColors
+      if (duplicateColors && duplicateColors.length > 0) {
+        console.log(`  - Duplicate colors: ${duplicateColors.join(', ')}`)
       }
-      if ((result.errors as any).validationErrors?.length > 0) {
+      const validationErrors = (result.errors as any).validationErrors
+      if (validationErrors && validationErrors.length > 0) {
         console.log('  - Validation errors:')
-        ;(result.errors as any).validationErrors.forEach((err: any) => {
+        validationErrors.forEach((err: any) => {
           console.log(`    ${err.path.join('.')}: ${err.message}`)
         })
       }

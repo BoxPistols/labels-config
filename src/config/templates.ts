@@ -11,17 +11,17 @@ import type { LabelConfig, LabelRegistry } from '../types'
 export const MINIMAL_TEMPLATE: LabelConfig[] = [
   {
     name: 'bug',
-    color: 'ff0000',
+    color: 'ff0000' as any,
     description: 'Something is broken'
   },
   {
     name: 'feature',
-    color: '00ff00',
+    color: '00ff00' as any,
     description: 'New feature or request'
   },
   {
     name: 'documentation',
-    color: '0000ff',
+    color: '0000ff' as any,
     description: 'Improvements or additions to documentation'
   }
 ]
@@ -29,7 +29,9 @@ export const MINIMAL_TEMPLATE: LabelConfig[] = [
 /**
  * Standard GitHub template
  */
-export const GITHUB_STANDARD_TEMPLATE: LabelConfig[] = [
+const createLabels = (labels: any[]): LabelConfig[] => labels
+
+export const GITHUB_STANDARD_TEMPLATE: LabelConfig[] = createLabels([
   {
     name: 'bug',
     color: 'd73a4a',
@@ -75,13 +77,13 @@ export const GITHUB_STANDARD_TEMPLATE: LabelConfig[] = [
     color: 'ffffff',
     description: 'This will not be worked on'
   }
-]
+])
 
 /**
  * SDPF (Smart Drone Platform Frontend) template
  * Based on shells/labels.json from the original repository
  */
-export const SDPF_TEMPLATE: LabelConfig[] = [
+export const SDPF_TEMPLATE: LabelConfig[] = createLabels([
   {
     name: 'API',
     color: 'ffb300',
@@ -182,12 +184,12 @@ export const SDPF_TEMPLATE: LabelConfig[] = [
     color: '16c9f5',
     description: '画面の追加 更新'
   }
-]
+])
 
 /**
  * Agile/Scrum template
  */
-export const AGILE_TEMPLATE: LabelConfig[] = [
+export const AGILE_TEMPLATE: LabelConfig[] = createLabels([
   {
     name: 'story',
     color: '0e7490',
@@ -238,7 +240,7 @@ export const AGILE_TEMPLATE: LabelConfig[] = [
     color: 'cddc39',
     description: 'Low priority'
   }
-]
+])
 
 /**
  * All available templates

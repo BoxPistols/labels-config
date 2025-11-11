@@ -88,14 +88,17 @@ export class GitHubClient {
    */
   async updateLabel(currentName: string, label: Partial<LabelConfig>): Promise<GitHubLabel> {
     try {
-      const { data } = await this.octokit.rest.issues.updateLabel({
+      const updateData: any = {
         owner: this.owner,
         repo: this.repo,
-        current_name: currentName,
-        name: label.name,
-        color: label.color,
-        description: label.description
-      })
+        current_name: currentName
+      }
+
+      if (label.name) updateData.name = label.name
+      if (label.color) updateData.color = label.color
+      if (label.description) updateData.description = label.description
+
+      const { data } = await this.octokit.rest.issues.updateLabel(updateData)
 
       return {
         name: data.name,
