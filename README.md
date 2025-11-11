@@ -33,23 +33,37 @@ npm install @boxpistols/labels-config
 ### Basic Usage
 
 ```typescript
-import { LabelConfig, validateLabels } from '@boxpistols/labels-config'
+import { LabelConfig, validateLabels, CONFIG_TEMPLATES } from '@boxpistols/labels-config'
 
-const labels: LabelConfig[] = [
+// Use pre-built SDPF template
+const labels = CONFIG_TEMPLATES.sdpf
+
+// Or use custom labels
+const customLabels: LabelConfig[] = [
   {
     name: 'API',
     color: 'ffb300',
-    description: 'API related changes'
+    description: 'API・外部サービス連携'
+  },
+  {
+    name: 'Component',
+    color: '008672',
+    description: 'Component変更'
   },
   {
     name: 'Bug',
     color: 'ff0000',
-    description: 'Something is broken'
+    description: 'バグ修正'
+  },
+  {
+    name: 'Feature',
+    color: '00ff00',
+    description: '機能追加'
   }
 ]
 
 // Validate labels
-const validated = validateLabels(labels)
+const validated = validateLabels(customLabels)
 ```
 
 ### GitHub Synchronization
