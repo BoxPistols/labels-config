@@ -16,9 +16,9 @@
     "@typescript-eslint"
   ],
   "rules": {
-    "@typescript-eslint/explicit-function-return-types": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unused-vars": "error",
-    "no-console": ["warn", { "allow": ["warn", "error", "info"] }]
+    "no-console": ["warn", { "allow": ["warn", "error", "info"] }],
+    "no-useless-escape": "warn"
   }
 }

@@ -6,7 +6,6 @@
  */
 
 import { promises as fs } from 'fs'
-import path from 'path'
 import { LabelManager } from './manager'
 import { ConfigLoader } from './config/loader'
 import { GitHubLabelSync } from './github/sync'
@@ -46,10 +45,10 @@ Examples:
   labels-config init sdpf --file ./labels.json
 
   # Sync labels to GitHub
-  labels-config sync --token \$GITHUB_TOKEN --owner user --repo repo --file labels.json
+  labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json
 
   # Dry run before syncing
-  labels-config sync --token \$GITHUB_TOKEN --owner user --repo repo --dry-run --verbose
+  labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --dry-run --verbose
 `)
 }
 

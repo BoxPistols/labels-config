@@ -3,7 +3,7 @@
  * Pre-built label configurations for common use cases
  */
 
-import type { LabelConfig, LabelRegistry } from '../types'
+import type { LabelConfig } from '../types'
 
 /**
  * Minimal template for getting started
