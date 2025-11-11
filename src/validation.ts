@@ -5,6 +5,7 @@
 
 import { z } from 'zod'
 import type { LabelConfig, LabelRegistry, HexColor } from './types'
+import { normalizeHexColor } from './utils/color'
 
 /**
  * Validates hex color format
@@ -13,16 +14,7 @@ import type { LabelConfig, LabelRegistry, HexColor } from './types'
 const hexColorSchema = z
   .string()
   .regex(/^[0-9a-fA-F]{6}$|^[0-9a-fA-F]{3}$/, 'Invalid hex color format')
-  .transform((color) => {
-    // Expand 3-char hex to 6-char
-    if (color.length === 3) {
-      return color
-        .split('')
-        .map((c) => c + c)
-        .join('')
-    }
-    return color.toLowerCase()
-  }) as unknown as z.ZodType<HexColor>
+  .transform((color) => normalizeHexColor(color)) as unknown as z.ZodType<HexColor>
 
 /**
  * Label configuration schema
@@ -90,21 +82,41 @@ export function validateRegistry(registry: unknown): LabelRegistry {
 }
 
 /**
+ * Helper function to find duplicate strings in O(n) time
+ * @param values - Array of strings to check for duplicates
+ * @returns Array of unique duplicate values
+ */
+function findDuplicateStrings(values: string[]): string[] {
+  const seen = new Map<string, number>()
+  const duplicates = new Set<string>()
+  
+  for (const value of values) {
+    const count = seen.get(value) || 0
+    seen.set(value, count + 1)
+    
+    if (count === 1) {
+      duplicates.add(value)
+    }
+  }
+  
+  return Array.from(duplicates)
+}
+
+/**
  * Checks for duplicate label names
  */
 export function checkDuplicateNames(labels: LabelConfig[]): string[] {
   const names = labels.map((label) => label.name)
-  const duplicates = names.filter((name, index) => names.indexOf(name) !== index)
-  return [...new Set(duplicates)]
+  return findDuplicateStrings(names)
 }
 
 /**
  * Checks for duplicate colors (case-insensitive)
+ * Normalizes colors before comparison to handle unparsed labels
  */
 export function checkDuplicateColors(labels: LabelConfig[]): string[] {
-  const colors = labels.map((label) => label.color.toLowerCase())
-  const duplicates = colors.filter((color, index) => colors.indexOf(color) !== index)
-  return [...new Set(duplicates)]
+  const colors = labels.map((label) => normalizeHexColor(label.color))
+  return findDuplicateStrings(colors)
 }
 
 /**
