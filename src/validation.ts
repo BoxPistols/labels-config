@@ -99,10 +99,10 @@ export function checkDuplicateNames(labels: LabelConfig[]): string[] {
 }
 
 /**
- * Checks for duplicate colors
+ * Checks for duplicate colors (case-insensitive)
  */
 export function checkDuplicateColors(labels: LabelConfig[]): string[] {
-  const colors = labels.map((label) => label.color)
+  const colors = labels.map((label) => label.color.toLowerCase())
   const duplicates = colors.filter((color, index) => colors.indexOf(color) !== index)
   return [...new Set(duplicates)]
 }
