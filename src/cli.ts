@@ -6,11 +6,14 @@
  */
 
 import { promises as fs } from 'fs'
+import React from 'react'
+import { render } from 'ink'
 import { LabelManager } from './manager'
 import { ConfigLoader } from './config/loader'
 import { GitHubLabelSync } from './github/sync'
 import { validateWithDetails } from './validation'
 import { CONFIG_TEMPLATES, listTemplates } from './config/templates'
+import { App } from './ui/App.js'
 
 const args = process.argv.slice(2)
 const command = args[0]
@@ -22,6 +25,7 @@ labels-config CLI Tool
 Usage: labels-config <command> [options]
 
 Commands:
+  edit [file]                        Open interactive label editor
   validate <file>                    Validate label configuration file
   sync                               Sync labels to GitHub repository
   export <file>                      Export labels from GitHub repository
@@ -190,6 +194,29 @@ async function initCommand(): Promise<void> {
   }
 }
 
+async function editCommand(): Promise<void> {
+  const file = args[1] || args[args.indexOf('--file') + 1] || './labels.json'
+
+  let manager: LabelManager
+
+  try {
+    // 既存ファイルが存在する場合は読み込む
+    const content = await fs.readFile(file, 'utf-8')
+    const data = JSON.parse(content)
+    const loader = new ConfigLoader()
+    const labels = loader.loadFromJSON(data)
+    manager = new LabelManager({ labels })
+    console.log(`✓ Loaded ${labels.length} labels from ${file}`)
+  } catch (error) {
+    // ファイルが存在しない場合は新規作成
+    console.log(`⚠ File not found. Creating new configuration...`)
+    manager = new LabelManager()
+  }
+
+  // Inkアプリケーションをレンダリング
+  render(React.createElement(App, { configPath: file, manager }))
+}
+
 async function main(): Promise<void> {
   if (!command || command === 'help' || command === '--help' || command === '-h') {
     printUsage()
@@ -197,6 +224,9 @@ async function main(): Promise<void> {
   }
 
   switch (command) {
+    case 'edit':
+      await editCommand()
+      break
     case 'validate':
       await validateCommand()
       break
