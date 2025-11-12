@@ -128,12 +128,12 @@ Agile/Scrum workflow: stories, tasks, spikes, priorities, blockers.
 ### Usage
 
 ```typescript
-import { CONFIG_TEMPLATES } from '@boxpistols/labels-config'
+import { CONFIG_TEMPLATES } from 'labels-config-boxpistols'
 
 // Use a template
-const labels = CONFIG_TEMPLATES.react
-const labels = CONFIG_TEMPLATES.vue
-const labels = CONFIG_TEMPLATES.frontend
+const reactLabels = CONFIG_TEMPLATES.react
+const vueLabels = CONFIG_TEMPLATES.vue
+const frontendLabels = CONFIG_TEMPLATES.frontend
 ```
 
 ## Sync Modes
