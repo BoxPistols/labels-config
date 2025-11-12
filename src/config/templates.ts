@@ -235,7 +235,7 @@ export const VUE_TEMPLATE: LabelConfig[] = createLabels([
   },
   {
     name: 'vue-router',
-    color: '42b883',
+    color: '3ba57a',
     description: 'Vue Router navigation'
   },
   {
