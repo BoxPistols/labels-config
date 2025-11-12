@@ -33,7 +33,7 @@ export const labelConfigSchema = z.object({
     .min(1, 'Label name is required')
     .max(50, 'Label name must be 50 characters or less')
     .regex(
-      /^[a-zA-Z0-9\-\s\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+$/,
+      /^[a-zA-Z0-9\-\s\/\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+$/,
       'Label name contains invalid characters'
     ),
   color: hexColorSchema,
