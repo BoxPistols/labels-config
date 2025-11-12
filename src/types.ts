@@ -23,6 +23,18 @@ export interface LabelConfig {
    * Displayed in GitHub and UI components
    */
   description: string
+
+  /**
+   * Optional memo/note field for additional information
+   * Used for personal notes or additional context
+   */
+  memo?: string
+
+  /**
+   * Optional category assignment
+   * Used to group labels by category
+   */
+  category?: string
 }
 
 export interface LabelCategory {

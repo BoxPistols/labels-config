@@ -55,6 +55,48 @@ describe('Label Validation', () => {
       }
       expect(() => validateLabel(label)).not.toThrow()
     })
+
+    it('should accept optional memo field', () => {
+      const label = {
+        name: 'bug',
+        color: 'ff0000',
+        description: 'Something is broken',
+        memo: 'This is a memo note'
+      }
+      expect(() => validateLabel(label)).not.toThrow()
+      expect(validateLabel(label).memo).toBe('This is a memo note')
+    })
+
+    it('should accept optional category field', () => {
+      const label = {
+        name: 'bug',
+        color: 'ff0000',
+        description: 'Something is broken',
+        category: 'バグ'
+      }
+      expect(() => validateLabel(label)).not.toThrow()
+      expect(validateLabel(label).category).toBe('バグ')
+    })
+
+    it('should reject memo longer than 500 characters', () => {
+      const label = {
+        name: 'bug',
+        color: 'ff0000',
+        description: 'Something is broken',
+        memo: 'a'.repeat(501)
+      }
+      expect(() => validateLabel(label)).toThrow()
+    })
+
+    it('should reject empty category string', () => {
+      const label = {
+        name: 'bug',
+        color: 'ff0000',
+        description: 'Something is broken',
+        category: ''
+      }
+      expect(() => validateLabel(label)).toThrow()
+    })
   })
 
   describe('validateLabels', () => {

@@ -40,7 +40,16 @@ export const labelConfigSchema = z.object({
   description: z
     .string()
     .min(1, 'Description is required')
-    .max(200, 'Description must be 200 characters or less')
+    .max(200, 'Description must be 200 characters or less'),
+  memo: z
+    .string()
+    .max(500, 'Memo must be 500 characters or less')
+    .optional(),
+  category: z
+    .string()
+    .min(1, 'Category name must not be empty if provided')
+    .max(50, 'Category name must be 50 characters or less')
+    .optional()
 })
 
 /**

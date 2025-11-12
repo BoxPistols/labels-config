@@ -4,6 +4,9 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
+    environmentMatchGlobs: [
+      ['**/shortcuts.test.ts', 'happy-dom']
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
