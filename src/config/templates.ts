@@ -307,7 +307,7 @@ export const FRONTEND_TEMPLATE: LabelConfig[] = createLabels([
   },
   {
     name: 'accessibility',
-    color: '0e8a16',
+    color: '0052cc',
     description: 'A11y improvements'
   },
   {
