@@ -1,13 +1,13 @@
 # @boxpistols/labels-config
 
-Comprehensive label management system for GitHub repositories and development teams.
+Terminal-first label management system for GitHub repositories using gh CLI - No token required.
 
-Define, validate, and synchronize GitHub labels with a powerful schema-based configuration system. **No GitHub Token required for basic usage** - use 9 pre-built templates, define custom labels in TypeScript, or generate label configuration files.
+Define, validate, and synchronize GitHub labels with a powerful schema-based configuration system. **Uses gh CLI authentication** - no need to manage GitHub tokens manually. Use 9 pre-built templates, define custom labels in TypeScript, or generate label configuration files.
 
 **Use it as:**
-- 📦 npm package in your code (no token needed)
-- 🛠️ CLI tool to generate and validate label files (no token needed)
-- 🔄 GitHub sync tool (requires GitHub Token)
+- 📦 npm package in your code
+- 🛠️ CLI tool to generate and validate label files
+- 🔄 GitHub sync tool via gh CLI (no token needed - uses gh auth)
 
 ---
 
@@ -34,12 +34,12 @@ Define, validate, and synchronize GitHub labels with a powerful schema-based con
 
 ## Features
 
+- **Terminal-First with gh CLI**: No token management - uses gh CLI authentication
 - **9 Pre-built Templates**: Ready-to-use label sets for React, Vue, frontend, agile workflows, and more
-- **No GitHub Token Required** (for basic usage): Use as npm package, generate label files, validate configurations
 - **Schema-Based Configuration**: Define labels with Zod validation
 - **Type-Safe**: Full TypeScript support with auto-generated types
 - **CLI Tool**: Command-line interface for label management
-- **Optional GitHub Integration**: Sync labels to GitHub repositories (requires GitHub Token)
+- **GitHub Integration via gh CLI**: Sync labels to GitHub repositories (no token required)
 - **Multi-Format Distribution**: npm, ESM, UMD, and CDN support
 - **Bilingual Support**: English and Japanese label templates (sdpf-en, sdpf-ja)
 
@@ -99,7 +99,7 @@ const customLabels: LabelConfig[] = [
 const validated = validateLabels(customLabels)
 ```
 
-### Use Case 2: CLI - Generate Label Files (No GitHub Token Required)
+### Use Case 2: CLI - Generate Label Files
 
 ```bash
 # Generate label configuration from template
@@ -109,27 +109,35 @@ labels-config init react --file labels.json
 labels-config validate labels.json
 ```
 
-### Use Case 3: CLI - Sync to GitHub (GitHub Token Required)
+### Use Case 3: CLI - Sync to GitHub (uses gh CLI)
+
+First, authenticate with gh CLI:
+
+```bash
+gh auth login
+```
+
+Then sync labels:
 
 ```bash
 # Sync labels to GitHub (append mode - keeps existing labels)
-labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json
+labels-config sync --owner user --repo repo --file labels.json
 
 # Sync labels to GitHub (replace mode - deletes unlisted labels)
-labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json --delete-extra
+labels-config sync --owner user --repo repo --file labels.json --delete-extra
 
 # Export existing labels from GitHub
-labels-config export --token $GITHUB_TOKEN --owner user --repo repo --output labels.json
+labels-config export --owner user --repo repo --file labels.json
 ```
 
-### Use Case 4: Programmatic GitHub Sync (GitHub Token Required)
+### Use Case 4: Programmatic GitHub Sync (uses gh CLI)
 
 ```typescript
 import { GitHubLabelSync } from '@boxpistols/labels-config/github'
 import { CONFIG_TEMPLATES } from '@boxpistols/labels-config'
 
+// No token needed - uses gh CLI authentication
 const sync = new GitHubLabelSync({
-  token: process.env.GITHUB_TOKEN,
   owner: 'your-org',
   repo: 'your-repo'
 })
@@ -195,14 +203,14 @@ When syncing labels to GitHub, you can choose between two modes:
 Adds new labels and updates existing ones, but keeps labels that aren't in your configuration.
 
 ```bash
-labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json
+labels-config sync --owner user --repo repo --file labels.json
 ```
 
 ### Replace Mode
 Deletes all labels not in your configuration, giving you complete control.
 
 ```bash
-labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json --delete-extra
+labels-config sync --owner user --repo repo --file labels.json --delete-extra
 ```
 
 **Recommendation**: Use append mode during initial setup, then switch to replace mode once you've finalized your label set.
@@ -228,19 +236,19 @@ Labels are defined as JSON or TypeScript objects:
 
 ## 📚 Detailed Usage Guide
 
-### Important: Do You Need a GitHub Token?
+### Important: gh CLI Authentication
 
-**GITHUB_TOKEN is ONLY required for:**
+**gh CLI authentication is required for:**
 - ✅ Syncing labels to GitHub repositories (`sync` command)
 - ✅ Exporting labels from GitHub repositories (`export` command)
 
-**GITHUB_TOKEN is NOT required for:**
+**gh CLI authentication is NOT required for:**
 - ❌ Using as npm package in your code
 - ❌ Generating label files from templates (`init` command)
 - ❌ Validating label files (`validate` command)
 - ❌ Defining and managing labels in TypeScript/JavaScript
 
-**If you only want to use this package to define labels in your code, skip the GitHub Token setup.**
+**If you only want to use this package to define labels in your code, skip the gh CLI setup.**
 
 ### Step 1: Installation and Setup
 
@@ -261,26 +269,37 @@ npm install @boxpistols/labels-config
 npm install --save-dev @boxpistols/labels-config
 ```
 
-#### 1.2 Set up GitHub Token (Optional - Only for sync/export)
+#### 1.2 Set up gh CLI (Optional - Only for sync/export)
 
 **⚠️ Skip this step if you only use the package as a library or for generating label files.**
 
-Create a GitHub Personal Access Token with `repo` scope:
+Install and authenticate with gh CLI:
 
-1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
-2. Click "Generate new token (classic)"
-3. Select scopes: `repo` (Full control of private repositories)
-4. Copy the token and save it securely
-
-Set the token as an environment variable:
-
+**macOS:**
 ```bash
-# Add to your ~/.bashrc or ~/.zshrc
-export GITHUB_TOKEN="your_token_here"
-
-# Or create a .env file (don't commit this!)
-echo "GITHUB_TOKEN=your_token_here" > .env
+brew install gh
 ```
+
+**Linux:**
+```bash
+# Debian/Ubuntu
+sudo apt install gh
+
+# Fedora/RHEL
+sudo dnf install gh
+```
+
+**Windows:**
+```bash
+winget install --id GitHub.cli
+```
+
+**Authenticate:**
+```bash
+gh auth login
+```
+
+Follow the prompts to authenticate with your GitHub account. No need to manage tokens manually!
 
 ### Step 2: Choose a Template
 
@@ -378,7 +397,6 @@ Before making changes to your GitHub repository, preview what will happen:
 
 ```bash
 labels-config sync \
-  --token $GITHUB_TOKEN \
   --owner your-username \
   --repo your-repo \
   --file labels.json \
@@ -400,7 +418,6 @@ For the first sync, use append mode to keep existing labels:
 
 ```bash
 labels-config sync \
-  --token $GITHUB_TOKEN \
   --owner your-username \
   --repo your-repo \
   --file labels.json \
@@ -418,7 +435,6 @@ Once you're confident, use replace mode for complete control:
 
 ```bash
 labels-config sync \
-  --token $GITHUB_TOKEN \
   --owner your-username \
   --repo your-repo \
   --file labels.json \
@@ -439,7 +455,6 @@ To export current labels from a repository:
 
 ```bash
 labels-config export \
-  --token $GITHUB_TOKEN \
   --owner your-username \
   --repo your-repo \
   --file exported-labels.json
@@ -467,10 +482,10 @@ git commit -m "Update label definitions"
 labels-config validate labels.json
 
 # 3. Preview changes with dry run
-labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json --dry-run --verbose
+labels-config sync --owner user --repo repo --file labels.json --dry-run --verbose
 
 # 4. Apply changes
-labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json --verbose
+labels-config sync --owner user --repo repo --file labels.json --verbose
 ```
 
 #### 2. Adding New Labels
@@ -502,10 +517,10 @@ labels-config validate labels.json
 
 ```bash
 # Dry run first
-labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json --dry-run --verbose
+labels-config sync --owner user --repo repo --file labels.json --dry-run --verbose
 
 # Apply changes
-labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json --verbose
+labels-config sync --owner user --repo repo --file labels.json --verbose
 ```
 
 #### 3. Modifying Existing Labels
@@ -527,7 +542,7 @@ The sync will automatically update the existing label without affecting issues/P
 **Option B: Complete removal (Replace Mode)**
 ```bash
 # Remove from labels.json, then:
-labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json --delete-extra --verbose
+labels-config sync --owner user --repo repo --file labels.json --delete-extra --verbose
 ```
 
 ⚠️ **Warning**: Removing a label removes it from all issues and PRs using it!
@@ -558,7 +573,6 @@ for REPO in "${REPOS[@]}"; do
 
   # Sync labels
   labels-config sync \
-    --token $GITHUB_TOKEN \
     --owner $OWNER \
     --repo $REPO_NAME \
     --file labels.json \
@@ -607,15 +621,27 @@ jobs:
       - name: Install labels-config
         run: npm install -g @boxpistols/labels-config
 
+      - name: Install gh CLI
+        run: |
+          type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y)
+          sudo mkdir -p -m 755 /etc/apt/keyrings
+          wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
+          sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+
+      - name: Authenticate gh CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GITHUB_TOKEN" | gh auth login --with-token
+
       - name: Validate labels
         run: labels-config validate labels.json
 
       - name: Sync labels
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           labels-config sync \
-            --token $GITHUB_TOKEN \
             --owner ${{ github.repository_owner }} \
             --repo ${{ github.event.repository.name }} \
             --file labels.json \
@@ -633,7 +659,6 @@ jobs:
 - Use consistent color coding across projects
 
 **❌ DON'T:**
-- Commit your GitHub token to version control
 - Delete labels without checking issue/PR usage
 - Change label names frequently (breaks workflows)
 - Use ambiguous or overlapping label meanings
@@ -670,11 +695,11 @@ jobs:
 **From manual GitHub labels:**
 ```bash
 # Export current labels
-labels-config export --token $GITHUB_TOKEN --owner user --repo repo --file current.json
+labels-config export --owner user --repo repo --file current.json
 
 # Edit as needed
 # Then sync back
-labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file current.json
+labels-config sync --owner user --repo repo --file current.json
 ```
 
 **From other label tools:**
@@ -702,13 +727,14 @@ labels-config validate labels.json
 ### Problem: "Authentication failed"
 
 ```bash
-# Verify your token
-echo $GITHUB_TOKEN
+# Check gh CLI authentication
+gh auth status
 
-# Check token scopes at:
-# https://github.com/settings/tokens
+# Re-authenticate if needed
+gh auth login
 
-# Required scope: repo
+# Refresh authentication
+gh auth refresh
 ```
 
 ### Problem: "Label already exists"
@@ -721,20 +747,20 @@ echo $GITHUB_TOKEN
 ```bash
 # Try with maximum verbosity
 labels-config sync \
-  --token $GITHUB_TOKEN \
   --owner user \
   --repo repo \
   --file labels.json \
   --verbose
 
 # Check if dry-run shows the changes
-labels-config sync ... --dry-run --verbose
+labels-config sync --owner user --repo repo --file labels.json --dry-run --verbose
 ```
 
 ### Problem: "Rate limit exceeded"
 
 - GitHub API has rate limits
-- Wait 60 minutes or use a different token
+- Check your rate limit: `gh api rate_limit`
+- Wait 60 minutes for the limit to reset
 - For bulk operations, add delays between syncs
 
 ---

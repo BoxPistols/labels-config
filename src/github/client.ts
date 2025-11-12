@@ -1,15 +1,13 @@
 /**
- * GitHub API Client
- * Wrapper around Octokit for label operations
+ * GitHub CLI Client
+ * Wrapper around gh CLI for label operations
+ * No token required - uses gh CLI authentication
  */
 
-import { Octokit } from 'octokit'
+import { execSync } from 'child_process'
 import type { LabelConfig } from '../types'
 
 export interface GitHubClientOptions {
-  /** GitHub personal access token */
-  token: string
-
   /** Repository owner */
   owner: string
 
@@ -29,14 +27,28 @@ export interface GitHubLabel {
 }
 
 export class GitHubClient {
-  private octokit: Octokit
   private owner: string
   private repo: string
+  private repoPath: string
 
   constructor(options: GitHubClientOptions) {
-    this.octokit = new Octokit({ auth: options.token })
     this.owner = options.owner
     this.repo = options.repo
+    this.repoPath = `${this.owner}/${this.repo}`
+  }
+
+  /**
+   * Execute gh CLI command
+   */
+  private exec(command: string): string {
+    try {
+      return execSync(command, {
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'pipe']
+      }).trim()
+    } catch (error: any) {
+      throw new Error(`gh CLI command failed: ${error.message}`)
+    }
   }
 
   /**
@@ -44,19 +56,22 @@ export class GitHubClient {
    */
   async fetchLabels(): Promise<GitHubLabel[]> {
     try {
-      const { data } = await this.octokit.rest.issues.listLabelsForRepo({
-        owner: this.owner,
-        repo: this.repo,
-        per_page: 100
-      })
+      const output = this.exec(
+        `gh label list --repo ${this.repoPath} --json name,color,description --limit 1000`
+      )
 
-      return data.map((label) => ({
+      if (!output) {
+        return []
+      }
+
+      const labels = JSON.parse(output)
+      return labels.map((label: any) => ({
         name: label.name,
         color: label.color,
         description: label.description || ''
       }))
     } catch (error) {
-      throw new Error(`Failed to fetch labels from ${this.owner}/${this.repo}: ${error}`)
+      throw new Error(`Failed to fetch labels from ${this.repoPath}: ${error}`)
     }
   }
 
@@ -65,18 +80,19 @@ export class GitHubClient {
    */
   async createLabel(label: LabelConfig): Promise<GitHubLabel> {
     try {
-      const { data } = await this.octokit.rest.issues.createLabel({
-        owner: this.owner,
-        repo: this.repo,
+      // Escape quotes in name and description
+      const name = label.name.replace(/"/g, '\\"')
+      const description = label.description.replace(/"/g, '\\"')
+      const color = label.color.replace('#', '')
+
+      this.exec(
+        `gh label create "${name}" --color "${color}" --description "${description}" --repo ${this.repoPath}`
+      )
+
+      return {
         name: label.name,
         color: label.color,
         description: label.description
-      })
-
-      return {
-        name: data.name,
-        color: data.color,
-        description: data.description || ''
       }
     } catch (error) {
       throw new Error(`Failed to create label "${label.name}": ${error}`)
@@ -88,22 +104,36 @@ export class GitHubClient {
    */
   async updateLabel(currentName: string, label: Partial<LabelConfig>): Promise<GitHubLabel> {
     try {
-      const updateData: any = {
-        owner: this.owner,
-        repo: this.repo,
-        current_name: currentName
+      const escapedCurrentName = currentName.replace(/"/g, '\\"')
+      const args: string[] = []
+
+      if (label.name && label.name !== currentName) {
+        args.push(`--name "${label.name.replace(/"/g, '\\"')}"`)
+      }
+      if (label.color) {
+        args.push(`--color "${label.color.replace('#', '')}"`)
+      }
+      if (label.description !== undefined) {
+        args.push(`--description "${label.description.replace(/"/g, '\\"')}"`)
       }
 
-      if (label.name) updateData.name = label.name
-      if (label.color) updateData.color = label.color
-      if (label.description) updateData.description = label.description
+      if (args.length === 0) {
+        // No changes needed
+        return {
+          name: currentName,
+          color: label.color || '',
+          description: label.description || ''
+        }
+      }
 
-      const { data } = await this.octokit.rest.issues.updateLabel(updateData)
+      this.exec(
+        `gh label edit "${escapedCurrentName}" ${args.join(' ')} --repo ${this.repoPath}`
+      )
 
       return {
-        name: data.name,
-        color: data.color,
-        description: data.description || ''
+        name: label.name || currentName,
+        color: label.color || '',
+        description: label.description || ''
       }
     } catch (error) {
       throw new Error(`Failed to update label "${currentName}": ${error}`)
@@ -115,11 +145,8 @@ export class GitHubClient {
    */
   async deleteLabel(name: string): Promise<void> {
     try {
-      await this.octokit.rest.issues.deleteLabel({
-        owner: this.owner,
-        repo: this.repo,
-        name
-      })
+      const escapedName = name.replace(/"/g, '\\"')
+      this.exec(`gh label delete "${escapedName}" --repo ${this.repoPath} --yes`)
     } catch (error) {
       throw new Error(`Failed to delete label "${name}": ${error}`)
     }
@@ -130,12 +157,8 @@ export class GitHubClient {
    */
   async hasLabel(name: string): Promise<boolean> {
     try {
-      await this.octokit.rest.issues.getLabel({
-        owner: this.owner,
-        repo: this.repo,
-        name
-      })
-      return true
+      const labels = await this.fetchLabels()
+      return labels.some((label) => label.name.toLowerCase() === name.toLowerCase())
     } catch (error) {
       return false
     }

@@ -1,7 +1,7 @@
 {
   "name": "labels-config-boxpistols",
   "version": "0.1.0",
-  "description": "Comprehensive label management system for GitHub repositories and development teams",
+  "description": "Terminal-first label management system for GitHub repositories using gh CLI - No token required",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -74,8 +74,7 @@
     "vitest": "^1.0.4"
   },
   "dependencies": {
-    "zod": "^3.22.4",
-    "octokit": "^3.1.0"
+    "zod": "^3.22.4"
   },
   "engines": {
     "node": ">=18.0.0"

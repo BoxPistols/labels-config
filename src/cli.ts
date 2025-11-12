@@ -17,19 +17,22 @@ const command = args[0]
 
 function printUsage(): void {
   console.log(`
-labels-config CLI Tool
+labels-config CLI Tool - Terminal-first with gh CLI
 
 Usage: labels-config <command> [options]
 
 Commands:
   validate <file>                    Validate label configuration file
-  sync                               Sync labels to GitHub repository
-  export <file>                      Export labels from GitHub repository
+  sync                               Sync labels to GitHub repository (uses gh CLI)
+  export <file>                      Export labels from GitHub repository (uses gh CLI)
   init <template>                    Initialize new configuration
   help                               Show this help message
 
+Prerequisites:
+  - gh CLI must be installed and authenticated (run: gh auth login)
+  - No GitHub token required - uses gh CLI authentication
+
 Options:
-  --token <token>                    GitHub personal access token (required for sync/export)
   --owner <owner>                    Repository owner (required for sync/export)
   --repo <repo>                      Repository name (required for sync/export)
   --file <file>                      Configuration file path
@@ -53,6 +56,9 @@ Sync Modes:
   --delete-extra (replace):          Delete all existing labels and replace with config
 
 Examples:
+  # Setup gh CLI authentication first
+  gh auth login
+
   # Validate configuration
   labels-config validate ./labels.json
 
@@ -60,13 +66,16 @@ Examples:
   labels-config init react --file ./labels.json
 
   # Sync labels (append mode - add/update, keep existing)
-  labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json
+  labels-config sync --owner user --repo repo --file labels.json
 
   # Sync labels (replace mode - delete all, use only config)
-  labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json --delete-extra
+  labels-config sync --owner user --repo repo --file labels.json --delete-extra
 
   # Dry run before syncing
-  labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --dry-run --verbose
+  labels-config sync --owner user --repo repo --file labels.json --dry-run --verbose
+
+  # Export labels from repository
+  labels-config export --owner user --repo repo --file labels.json
 `)
 }
 
@@ -112,7 +121,6 @@ async function validateCommand(): Promise<void> {
 }
 
 async function syncCommand(): Promise<void> {
-  const token = args[args.indexOf('--token') + 1]
   const owner = args[args.indexOf('--owner') + 1]
   const repo = args[args.indexOf('--repo') + 1]
   const file = args[args.indexOf('--file') + 1]
@@ -120,8 +128,8 @@ async function syncCommand(): Promise<void> {
   const deleteExtra = args.includes('--delete-extra')
   const verbose = args.includes('--verbose')
 
-  if (!token || !owner || !repo || !file) {
-    console.error('Error: --token, --owner, --repo, and --file are required')
+  if (!owner || !repo || !file) {
+    console.error('Error: --owner, --repo, and --file are required')
     process.exit(1)
   }
 
@@ -131,7 +139,6 @@ async function syncCommand(): Promise<void> {
     const labels = loader.loadFromString(content)
 
     const sync = new GitHubLabelSync({
-      token,
       owner,
       repo,
       dryRun,
@@ -161,18 +168,17 @@ async function syncCommand(): Promise<void> {
 }
 
 async function exportCommand(): Promise<void> {
-  const token = args[args.indexOf('--token') + 1]
   const owner = args[args.indexOf('--owner') + 1]
   const repo = args[args.indexOf('--repo') + 1]
   const file = args[args.indexOf('--file') + 1] || 'labels.json'
 
-  if (!token || !owner || !repo) {
-    console.error('Error: --token, --owner, and --repo are required')
+  if (!owner || !repo) {
+    console.error('Error: --owner and --repo are required')
     process.exit(1)
   }
 
   try {
-    const sync = new GitHubLabelSync({ token, owner, repo })
+    const sync = new GitHubLabelSync({ owner, repo })
     const labels = await sync.fetchLabels()
 
     const manager = new LabelManager({ labels })
