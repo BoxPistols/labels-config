@@ -156,14 +156,14 @@ When syncing labels to GitHub, you can choose between two modes:
 Adds new labels and updates existing ones, but keeps labels that aren't in your configuration.
 
 ```bash
-labels-config sync --token $TOKEN --owner user --repo repo --file labels.json
+labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json
 ```
 
 ### Replace Mode
 Deletes all labels not in your configuration, giving you complete control.
 
 ```bash
-labels-config sync --token $TOKEN --owner user --repo repo --file labels.json --delete-extra
+labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json --delete-extra
 ```
 
 **Recommendation**: Use append mode during initial setup, then switch to replace mode once you've finalized your label set.
