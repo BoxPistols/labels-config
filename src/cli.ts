@@ -34,18 +34,34 @@ Options:
   --repo <repo>                      Repository name (required for sync/export)
   --file <file>                      Configuration file path
   --dry-run                          Dry run mode (don't make changes)
-  --delete-extra                     Delete labels on GitHub not in config
+  --delete-extra                     Replace mode: delete existing labels not in config (default: append mode)
   --verbose                          Verbose output
+
+Available Templates (7 types, frontend-focused):
+  minimal                            Basic 3-label set (bug, feature, documentation)
+  github                             GitHub standard labels
+  react                              React ecosystem (components, hooks, state management)
+  vue                                Vue.js ecosystem (composables, Pinia, router)
+  frontend                           General frontend development (framework-agnostic)
+  sdpf                               Production project example (19 labels)
+  agile                              Agile/Scrum workflow
+
+Sync Modes:
+  Default (append):                  Add new labels, update existing ones, keep others
+  --delete-extra (replace):          Delete all existing labels and replace with config
 
 Examples:
   # Validate configuration
   labels-config validate ./labels.json
 
   # Initialize from template
-  labels-config init sdpf --file ./labels.json
+  labels-config init react --file ./labels.json
 
-  # Sync labels to GitHub
+  # Sync labels (append mode - add/update, keep existing)
   labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json
+
+  # Sync labels (replace mode - delete all, use only config)
+  labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json --delete-extra
 
   # Dry run before syncing
   labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --dry-run --verbose

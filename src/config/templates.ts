@@ -187,6 +187,187 @@ export const SDPF_TEMPLATE: LabelConfig[] = createLabels([
 ])
 
 /**
+ * React Development template
+ * Focused on React ecosystem and component development
+ */
+export const REACT_TEMPLATE: LabelConfig[] = createLabels([
+  {
+    name: 'component',
+    color: '61dafb',
+    description: 'React component development'
+  },
+  {
+    name: 'hook',
+    color: '20232a',
+    description: 'Custom hooks implementation'
+  },
+  {
+    name: 'state-management',
+    color: '764abc',
+    description: 'Redux, Zustand, Context API'
+  },
+  {
+    name: 'performance',
+    color: 'ffc107',
+    description: 'Performance optimization, memoization'
+  },
+  {
+    name: 'typescript',
+    color: '3178c6',
+    description: 'TypeScript types and interfaces'
+  },
+  {
+    name: 'styling',
+    color: 'ff69b4',
+    description: 'CSS-in-JS, Tailwind, styled-components'
+  },
+  {
+    name: 'testing',
+    color: '15c213',
+    description: 'Unit tests, React Testing Library'
+  },
+  {
+    name: 'bug',
+    color: 'd73a4a',
+    description: 'Bug fix required'
+  },
+  {
+    name: 'refactor',
+    color: 'fbca04',
+    description: 'Code refactoring'
+  },
+  {
+    name: 'accessibility',
+    color: '0e8a16',
+    description: 'A11y improvements'
+  }
+])
+
+/**
+ * Vue.js Development template
+ * Focused on Vue ecosystem and composition API
+ */
+export const VUE_TEMPLATE: LabelConfig[] = createLabels([
+  {
+    name: 'component',
+    color: '42b883',
+    description: 'Vue component development'
+  },
+  {
+    name: 'composable',
+    color: '35495e',
+    description: 'Composition API, composables'
+  },
+  {
+    name: 'pinia',
+    color: 'ffd859',
+    description: 'Pinia state management'
+  },
+  {
+    name: 'vue-router',
+    color: '42b883',
+    description: 'Vue Router navigation'
+  },
+  {
+    name: 'typescript',
+    color: '3178c6',
+    description: 'TypeScript integration'
+  },
+  {
+    name: 'styling',
+    color: 'ff69b4',
+    description: 'Scoped CSS, CSS modules'
+  },
+  {
+    name: 'testing',
+    color: '15c213',
+    description: 'Vitest, Vue Test Utils'
+  },
+  {
+    name: 'bug',
+    color: 'd73a4a',
+    description: 'Bug fix required'
+  },
+  {
+    name: 'performance',
+    color: 'ffc107',
+    description: 'Performance optimization'
+  },
+  {
+    name: 'accessibility',
+    color: '0e8a16',
+    description: 'A11y improvements'
+  }
+])
+
+/**
+ * General Frontend Development template
+ * Framework-agnostic frontend development labels
+ */
+export const FRONTEND_TEMPLATE: LabelConfig[] = createLabels([
+  {
+    name: 'feature',
+    color: '0e8a16',
+    description: 'New feature implementation'
+  },
+  {
+    name: 'bug',
+    color: 'd73a4a',
+    description: 'Bug fix required'
+  },
+  {
+    name: 'ui',
+    color: 'ff69b4',
+    description: 'UI/UX improvements'
+  },
+  {
+    name: 'styling',
+    color: 'c5def5',
+    description: 'CSS, styling updates'
+  },
+  {
+    name: 'responsive',
+    color: '1d76db',
+    description: 'Responsive design, mobile support'
+  },
+  {
+    name: 'performance',
+    color: 'ffc107',
+    description: 'Performance optimization'
+  },
+  {
+    name: 'accessibility',
+    color: '0e8a16',
+    description: 'A11y improvements'
+  },
+  {
+    name: 'testing',
+    color: '15c213',
+    description: 'Testing, E2E, unit tests'
+  },
+  {
+    name: 'dependencies',
+    color: '0366d6',
+    description: 'Dependencies update'
+  },
+  {
+    name: 'documentation',
+    color: '0075ca',
+    description: 'Documentation updates'
+  },
+  {
+    name: 'build',
+    color: 'fbca04',
+    description: 'Build system, bundler'
+  },
+  {
+    name: 'seo',
+    color: 'b60205',
+    description: 'SEO optimization'
+  }
+])
+
+/**
  * Agile/Scrum template
  */
 export const AGILE_TEMPLATE: LabelConfig[] = createLabels([
@@ -248,6 +429,9 @@ export const AGILE_TEMPLATE: LabelConfig[] = createLabels([
 export const CONFIG_TEMPLATES = {
   minimal: MINIMAL_TEMPLATE,
   github: GITHUB_STANDARD_TEMPLATE,
+  react: REACT_TEMPLATE,
+  vue: VUE_TEMPLATE,
+  frontend: FRONTEND_TEMPLATE,
   sdpf: SDPF_TEMPLATE,
   agile: AGILE_TEMPLATE
 }

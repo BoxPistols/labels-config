@@ -31,6 +31,7 @@
     "templates",
     "docs"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "tsup src/index.ts src/config/index.ts src/github/index.ts src/cli.ts --format cjs,esm --dts --shims",
     "build:umd": "tsup src/index.ts --format iife --dts --globalName LabelsConfig --outDir dist",

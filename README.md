@@ -87,12 +87,74 @@ await sync.syncLabels(labels)
 # Validate configuration
 labels-config validate ./labels.json
 
-# Sync labels to GitHub
+# Initialize from template
+labels-config init react --file ./labels.json
+
+# Sync labels to GitHub (append mode - keeps existing labels)
 labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json
+
+# Sync labels to GitHub (replace mode - deletes unlisted labels)
+labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file labels.json --delete-extra
 
 # Generate configuration from repository
 labels-config export --token $GITHUB_TOKEN --owner user --repo repo --output labels.json
 ```
+
+## Label Templates
+
+This package includes 7 pre-built label templates, with a focus on frontend development:
+
+### 1. **minimal** (3 labels)
+Basic starter set with essential labels.
+
+### 2. **github** (9 labels)
+Standard GitHub default labels (bug, enhancement, documentation, etc.).
+
+### 3. **react** (10 labels)
+React ecosystem: components, hooks, state management, TypeScript, testing, styling, performance, accessibility.
+
+### 4. **vue** (10 labels)
+Vue.js ecosystem: components, composables, Pinia, Vue Router, TypeScript, testing, styling, performance, accessibility.
+
+### 5. **frontend** (12 labels)
+Framework-agnostic frontend development: features, UI/UX, responsive design, accessibility, SEO, build system, dependencies.
+
+### 6. **sdpf** (19 labels)
+Production project example from Smart Drone Platform Frontend.
+
+### 7. **agile** (10 labels)
+Agile/Scrum workflow: stories, tasks, spikes, priorities, blockers.
+
+### Usage
+
+```typescript
+import { CONFIG_TEMPLATES } from '@boxpistols/labels-config'
+
+// Use a template
+const labels = CONFIG_TEMPLATES.react
+const labels = CONFIG_TEMPLATES.vue
+const labels = CONFIG_TEMPLATES.frontend
+```
+
+## Sync Modes
+
+When syncing labels to GitHub, you can choose between two modes:
+
+### Append Mode (Default)
+Adds new labels and updates existing ones, but keeps labels that aren't in your configuration.
+
+```bash
+labels-config sync --token $TOKEN --owner user --repo repo --file labels.json
+```
+
+### Replace Mode
+Deletes all labels not in your configuration, giving you complete control.
+
+```bash
+labels-config sync --token $TOKEN --owner user --repo repo --file labels.json --delete-extra
+```
+
+**Recommendation**: Use append mode during initial setup, then switch to replace mode once you've finalized your label set.
 
 ## Configuration Format
 
