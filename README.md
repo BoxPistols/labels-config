@@ -102,7 +102,7 @@ labels-config export --token $GITHUB_TOKEN --owner user --repo repo --output lab
 
 ## Label Templates
 
-This package includes 7 pre-built label templates, with a focus on frontend development:
+This package includes 9 pre-built label templates, with a focus on frontend development:
 
 ### 1. **minimal** (3 labels)
 Basic starter set with essential labels.
@@ -119,10 +119,16 @@ Vue.js ecosystem: components, composables, Pinia, Vue Router, TypeScript, testin
 ### 5. **frontend** (12 labels)
 Framework-agnostic frontend development: features, UI/UX, responsive design, accessibility, SEO, build system, dependencies.
 
-### 6. **sdpf** (14 labels)
-Refined production project set with practical labels for modern development.
+### 6. **sdpf-en** (14 labels, English)
+Production project set with English labels for international teams.
 
-### 7. **agile** (10 labels)
+### 7. **sdpf-ja** (14 labels, Japanese)
+Production project set with Japanese labels for domestic development teams.
+
+### 8. **sdpf** (14 labels, Japanese)
+Alias for `sdpf-ja` - maintained for backward compatibility.
+
+### 9. **agile** (10 labels)
 Agile/Scrum workflow: stories, tasks, spikes, priorities, blockers.
 
 ### Usage
@@ -134,6 +140,12 @@ import { CONFIG_TEMPLATES } from 'labels-config-boxpistols'
 const reactLabels = CONFIG_TEMPLATES.react
 const vueLabels = CONFIG_TEMPLATES.vue
 const frontendLabels = CONFIG_TEMPLATES.frontend
+
+// Choose language for SDPF
+const sdpfEnglish = CONFIG_TEMPLATES['sdpf-en']
+const sdpfJapanese = CONFIG_TEMPLATES['sdpf-ja']
+// or use the default (Japanese)
+const sdpfDefault = CONFIG_TEMPLATES.sdpf
 ```
 
 ## Sync Modes

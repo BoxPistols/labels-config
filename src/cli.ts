@@ -37,13 +37,15 @@ Options:
   --delete-extra                     Replace mode: delete existing labels not in config (default: append mode)
   --verbose                          Verbose output
 
-Available Templates (7 types, frontend-focused):
+Available Templates (9 types, frontend-focused):
   minimal                            Basic 3-label set (bug, feature, documentation)
   github                             GitHub standard labels
   react                              React ecosystem (components, hooks, state management)
   vue                                Vue.js ecosystem (composables, Pinia, router)
   frontend                           General frontend development (framework-agnostic)
-  sdpf                               Production project example (19 labels)
+  sdpf-en                            Production project (14 labels, English)
+  sdpf-ja                            Production project (14 labels, Japanese)
+  sdpf                               Production project (alias for sdpf-ja)
   agile                              Agile/Scrum workflow
 
 Sync Modes:
