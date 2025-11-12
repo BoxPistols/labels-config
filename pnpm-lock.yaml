@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      labels-config-boxpistols:
+        specifier: ^0.2.0
+        version: 0.2.0
       zod:
         specifier: ^3.22.4
         version: 3.25.76
@@ -986,6 +989,11 @@ packages:
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
+
+  labels-config-boxpistols@0.2.0:
+    resolution: {integrity: sha512-Ik3EatnQ0MgFsoxpyxUfHCW8XvKeR36fRfk/Zo4AX2IlXuFRBF5S6yvyodrUmqbEOcf3DZgLGk+q9EIWqnIALA==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
 
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
@@ -2368,6 +2376,10 @@ snapshots:
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
+
+  labels-config-boxpistols@0.2.0:
+    dependencies:
+      zod: 3.25.76
 
   levn@0.4.1:
     dependencies:
