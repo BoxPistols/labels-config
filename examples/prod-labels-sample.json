@@ -104,8 +104,8 @@
     }
   ],
   "metadata": {
-    "template": "sdpf",
-    "source": "Smart Drone Platform Frontend",
+    "template": "prod",
+    "source": "Production Project",
     "totalLabels": 20,
     "categories": [
       "技術領域",

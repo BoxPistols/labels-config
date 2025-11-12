@@ -67,6 +67,27 @@ npm install -g @boxpistols/labels-config
 
 ## Usage
 
+### Understanding init vs sync
+
+**Important:** The `init` command creates a local configuration file - it does NOT sync to GitHub.
+
+| Command | What it does |
+|---------|--------------|
+| `init` | Creates `labels.json` locally (no GitHub changes) |
+| `sync` | Applies `labels.json` to your GitHub repository |
+
+**Example workflow:**
+```bash
+# Step 1: Create local config file (no GitHub changes yet)
+labels-config init prod-ja --file labels.json
+
+# Step 2: Check what's in the file
+cat labels.json
+
+# Step 3: Apply to GitHub (this actually changes your labels)
+labels-config sync --owner your-name --repo your-repo --file labels.json
+```
+
 ### 1. Create label configuration
 
 **From template:**
@@ -77,8 +98,8 @@ labels-config init minimal --file labels.json
 **Available templates:**
 - `minimal` - Basic 3-label set (bug, feature, documentation)
 - `github` - GitHub standard labels
-- `sdpf-ja` - Production project (Japanese)
-- `sdpf-en` - Production project (English)
+- `prod-ja` - Production project (Japanese, 14 labels)
+- `prod-en` - Production project (English, 14 labels)
 - `agile` - Agile/Scrum workflow
 - `react`, `vue`, `frontend` - Framework-specific
 

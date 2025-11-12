@@ -80,10 +80,10 @@ export const GITHUB_STANDARD_TEMPLATE: LabelConfig[] = createLabels([
 ])
 
 /**
- * SDPF (Smart Drone Platform Frontend) template - English
+ * Production template - English
  * Refined and practical label set for production projects
  */
-export const SDPF_EN_TEMPLATE: LabelConfig[] = createLabels([
+export const PROD_EN_TEMPLATE: LabelConfig[] = createLabels([
   {
     name: 'API',
     color: 'ffb300',
@@ -157,11 +157,11 @@ export const SDPF_EN_TEMPLATE: LabelConfig[] = createLabels([
 ])
 
 /**
- * SDPF (Smart Drone Platform Frontend) template - Japanese
+ * Production template - Japanese
  * Refined and practical label set for production projects
  * All labels in Japanese for domestic projects
  */
-export const SDPF_JA_TEMPLATE: LabelConfig[] = createLabels([
+export const PROD_JA_TEMPLATE: LabelConfig[] = createLabels([
   {
     name: 'API連携',
     color: 'ffb300',
@@ -235,9 +235,9 @@ export const SDPF_JA_TEMPLATE: LabelConfig[] = createLabels([
 ])
 
 /**
- * SDPF default template (alias for Japanese version for backward compatibility)
+ * Production default template (alias for Japanese version)
  */
-export const SDPF_TEMPLATE = SDPF_JA_TEMPLATE
+export const PROD_TEMPLATE = PROD_JA_TEMPLATE
 
 /**
  * React Development template
@@ -485,9 +485,9 @@ export const CONFIG_TEMPLATES = {
   react: REACT_TEMPLATE,
   vue: VUE_TEMPLATE,
   frontend: FRONTEND_TEMPLATE,
-  'sdpf-en': SDPF_EN_TEMPLATE,
-  'sdpf-ja': SDPF_JA_TEMPLATE,
-  sdpf: SDPF_TEMPLATE,
+  'prod-en': PROD_EN_TEMPLATE,
+  'prod-ja': PROD_JA_TEMPLATE,
+  prod: PROD_TEMPLATE,
   agile: AGILE_TEMPLATE
 }
 

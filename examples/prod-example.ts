@@ -1,21 +1,21 @@
 /**
- * SDPF (Smart Drone Platform Frontend) Labels Example
- * Complete example showing all 20 labels from the original sdpf-frontend-next project
+ * Production Labels Example
+ * Complete example showing production-ready label configuration
  */
 
 import { LabelManager, CONFIG_TEMPLATES } from '../src/index'
 
 /**
- * Create a label manager with SDPF template
+ * Create a label manager with production template
  */
 const manager = new LabelManager({
-  labels: CONFIG_TEMPLATES.sdpf
+  labels: CONFIG_TEMPLATES.prod
 })
 
 /**
- * Log all SDPF labels
+ * Log all production labels
  */
-console.log('SDPF Template Labels:')
+console.log('Production Template Labels:')
 console.log(`Total labels: ${manager.count()}\n`)
 
 manager.getAllLabels().forEach((label) => {
@@ -26,8 +26,8 @@ manager.getAllLabels().forEach((label) => {
  * Export as JSON
  */
 const registry = manager.exportRegistry('1.0.0', {
-  template: 'sdpf',
-  source: 'Smart Drone Platform Frontend'
+  template: 'prod',
+  source: 'Production Project'
 })
 
 console.log('\n\nExported Registry:')
@@ -46,7 +46,7 @@ results.forEach((label) => {
  * Template comparison
  */
 console.log('\n\nAvailable Templates:')
-const templates = ['minimal', 'github', 'sdpf', 'agile'] as const
+const templates = ['minimal', 'github', 'prod', 'prod-en', 'prod-ja', 'agile'] as const
 templates.forEach((template) => {
   const labels = CONFIG_TEMPLATES[template]
   console.log(`  • ${template.padEnd(10)}: ${labels.length} labels`)

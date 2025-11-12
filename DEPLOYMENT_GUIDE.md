@@ -187,9 +187,9 @@ Settings > Secrets and variables > Actions
    ```
    ## Features
    - Label validation and management
-   - GitHub API integration
+   - GitHub API integration (using gh CLI)
    - CLI tool
-   - Multiple templates (minimal, github, sdpf, agile)
+   - Multiple templates (minimal, github, prod, prod-en, prod-ja, react, vue, frontend, agile)
    - Full TypeScript support
    - CDN distribution
    ```

@@ -255,7 +255,12 @@ Get predefined template by name.
 Templates:
 - `minimal` - Minimal set for getting started
 - `github` - GitHub standard labels
-- `sdpf` - Smart Drone Platform Frontend labels
+- `prod` - Production project labels (Japanese)
+- `prod-en` - Production project labels (English)
+- `prod-ja` - Production project labels (Japanese, alias)
+- `react` - React ecosystem labels
+- `vue` - Vue.js ecosystem labels
+- `frontend` - General frontend development labels
 - `agile` - Agile/Scrum labels
 
 #### `listTemplates(): TemplateName[]`
