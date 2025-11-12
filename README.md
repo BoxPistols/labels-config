@@ -9,6 +9,29 @@ Define, validate, and synchronize GitHub labels with a powerful schema-based con
 - 🛠️ CLI tool to generate and validate label files (no token needed)
 - 🔄 GitHub sync tool (requires GitHub Token)
 
+---
+
+## 📑 Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Detailed Usage Guide](#-detailed-usage-guide)
+  - [Step 1: Installation and Setup](#step-1-installation-and-setup)
+  - [Step 2: Choose a Template](#step-2-choose-a-template)
+  - [Step 3: Customize Your Labels](#step-3-customize-your-labels)
+  - [Step 4: Preview Changes (Dry Run)](#step-4-preview-changes-dry-run)
+  - [Step 5: Sync to GitHub](#step-5-sync-to-github)
+  - [Step 6: Export Existing Labels](#step-6-export-existing-labels)
+- [Operational Update Manual](#-operational-update-manual)
+- [Label Templates](#label-templates)
+- [Sync Modes](#sync-modes)
+- [Configuration Format](#configuration-format)
+- [API Reference](#api-reference)
+- [Troubleshooting](#troubleshooting)
+
+---
+
 ## Features
 
 - **9 Pre-built Templates**: Ready-to-use label sets for React, Vue, frontend, agile workflows, and more
@@ -642,55 +665,7 @@ jobs:
 - `refactor` - Code improvement without behavior change
 ```
 
-#### 8. Troubleshooting
-
-**Problem: "Validation failed"**
-```bash
-# Check for specific errors
-labels-config validate labels.json
-
-# Common issues:
-# - Duplicate label names
-# - Invalid hex colors (must be 3 or 6 chars)
-# - Name too long (max 50 chars)
-# - Description too long (max 200 chars)
-```
-
-**Problem: "Authentication failed"**
-```bash
-# Verify your token
-echo $GITHUB_TOKEN
-
-# Check token scopes at:
-# https://github.com/settings/tokens
-
-# Required scope: repo
-```
-
-**Problem: "Label already exists"**
-- This is normal - the tool will update the existing label
-- Use `--verbose` to see what changed
-
-**Problem: "Labels not syncing"**
-```bash
-# Try with maximum verbosity
-labels-config sync \
-  --token $GITHUB_TOKEN \
-  --owner user \
-  --repo repo \
-  --file labels.json \
-  --verbose
-
-# Check if dry-run shows the changes
-labels-config sync ... --dry-run --verbose
-```
-
-**Problem: "Rate limit exceeded"**
-- GitHub API has rate limits
-- Wait 60 minutes or use a different token
-- For bulk operations, add delays between syncs
-
-#### 9. Migration from Other Systems
+#### 8. Migration from Other Systems
 
 **From manual GitHub labels:**
 ```bash
@@ -706,6 +681,63 @@ labels-config sync --token $GITHUB_TOKEN --owner user --repo repo --file current
 - Export to JSON format matching our schema
 - Validate before syncing
 - Consider doing a test repository first
+
+---
+
+## Troubleshooting
+
+### Problem: "Validation failed"
+
+```bash
+# Check for specific errors
+labels-config validate labels.json
+
+# Common issues:
+# - Duplicate label names
+# - Invalid hex colors (must be 3 or 6 chars)
+# - Name too long (max 50 chars)
+# - Description too long (max 200 chars)
+```
+
+### Problem: "Authentication failed"
+
+```bash
+# Verify your token
+echo $GITHUB_TOKEN
+
+# Check token scopes at:
+# https://github.com/settings/tokens
+
+# Required scope: repo
+```
+
+### Problem: "Label already exists"
+
+- This is normal - the tool will update the existing label
+- Use `--verbose` to see what changed
+
+### Problem: "Labels not syncing"
+
+```bash
+# Try with maximum verbosity
+labels-config sync \
+  --token $GITHUB_TOKEN \
+  --owner user \
+  --repo repo \
+  --file labels.json \
+  --verbose
+
+# Check if dry-run shows the changes
+labels-config sync ... --dry-run --verbose
+```
+
+### Problem: "Rate limit exceeded"
+
+- GitHub API has rate limits
+- Wait 60 minutes or use a different token
+- For bulk operations, add delays between syncs
+
+---
 
 ## API Reference
 
@@ -745,6 +777,16 @@ class GitHubLabelSync {
 
 Contributions are welcome! Please read our contributing guidelines.
 
+---
+
 ## License
 
 MIT
+
+---
+
+## Related Documentation
+
+- [日本語 README](./README.ja.md)
+- [Getting Started Guide](./docs/GETTING_STARTED.md)
+- [API Documentation](./docs/API.md)
