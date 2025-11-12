@@ -1,5 +1,5 @@
 {
-  "name": "labels-config-boxpistols",
+  "name": "@boxpistols/labels-config",
   "version": "0.1.1",
   "description": "Terminal-first label management system for GitHub repositories using gh CLI - No token required",
   "main": "dist/index.js",
