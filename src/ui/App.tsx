@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Text, useInput, useApp } from 'ink'
 import { LabelManager } from '../manager.js'
-import { SelectionManager, CategoryManager } from '../state.js'
+import { CategoryManager } from '../state.js'
 import type { LabelConfig } from '../types.js'
 import { LabelList } from './components/LabelList.js'
 import { StatusBar } from './components/StatusBar.js'

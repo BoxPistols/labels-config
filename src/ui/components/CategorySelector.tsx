@@ -14,8 +14,7 @@ interface CategorySelectorProps {
 
 export const CategorySelector: React.FC<CategorySelectorProps> = ({
   categories,
-  onSelect,
-  onCancel
+  onSelect
 }) => {
   const items = categories.map((category) => ({
     label: category,

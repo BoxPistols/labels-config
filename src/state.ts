@@ -229,6 +229,7 @@ export class CategoryManager {
   ): LabelConfig[] {
     return labels.map((label) => {
       if (labelNames.includes(label.name)) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { category, ...rest } = label
         return rest as LabelConfig
       }
