@@ -119,8 +119,8 @@ Vue.js ecosystem: components, composables, Pinia, Vue Router, TypeScript, testin
 ### 5. **frontend** (12 labels)
 Framework-agnostic frontend development: features, UI/UX, responsive design, accessibility, SEO, build system, dependencies.
 
-### 6. **sdpf** (19 labels)
-Production project example from Smart Drone Platform Frontend.
+### 6. **sdpf** (14 labels)
+Refined production project set with practical labels for modern development.
 
 ### 7. **agile** (10 labels)
 Agile/Scrum workflow: stories, tasks, spikes, priorities, blockers.

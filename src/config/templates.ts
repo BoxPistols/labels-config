@@ -81,7 +81,7 @@ export const GITHUB_STANDARD_TEMPLATE: LabelConfig[] = createLabels([
 
 /**
  * SDPF (Smart Drone Platform Frontend) template
- * Based on shells/labels.json from the original repository
+ * Refined and practical label set for production projects
  */
 export const SDPF_TEMPLATE: LabelConfig[] = createLabels([
   {
@@ -115,24 +115,9 @@ export const SDPF_TEMPLATE: LabelConfig[] = createLabels([
     description: '緊急修正・Hotfix'
   },
   {
-    name: 'Map',
-    color: '1e90ff',
-    description: '地図・マップ・経路・ウェイポイント関連'
-  },
-  {
-    name: 'Next.js',
-    color: '00c851',
-    description: 'Next.js特有の機能・SSR・SSG・App Router'
-  },
-  {
-    name: 'Performance',
-    color: 'ffc107',
-    description: 'パフォーマンス最適化'
-  },
-  {
     name: 'Refactoring',
     color: 'a9a9a9',
-    description: 'リファクタリング・コード整理'
+    description: 'リファクタリング・パフォーマンス最適化・コード整理'
   },
   {
     name: 'Test',
@@ -140,29 +125,14 @@ export const SDPF_TEMPLATE: LabelConfig[] = createLabels([
     description: 'テスト・E2E・ユニットテスト'
   },
   {
-    name: 'Theme',
-    color: 'ff69b4',
-    description: 'デザインテーマ設計'
-  },
-  {
-    name: 'Turbo',
-    color: '795548',
-    description: 'Turbo・モノレポ管理'
-  },
-  {
     name: 'TypeScript',
     color: 'e91e63',
     description: 'TypeScript型定義・型安全性'
   },
   {
-    name: 'UI Code',
-    color: '3f51b5',
-    description: 'UI Cording・MUI・Tailwind'
-  },
-  {
     name: 'UIUX',
     color: 'd876e3',
-    description: 'UIUXデザイン'
+    description: 'UIデザイン'
   },
   {
     name: '仕様変更',
