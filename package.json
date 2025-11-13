@@ -44,10 +44,10 @@
     "cli": "tsx src/cli.ts",
     "prepublishOnly": "npm run build",
     "version": "node -e \"const fs=require('fs');const v=require('./package.json').version;fs.writeFileSync('src/version.ts','export const version = \\''+v+'\\'\\n')\" && git add src/version.ts",
-    "release:patch": "npm version patch -m 'Release v%s' && npm publish --access public && git push --follow-tags",
-    "release:minor": "npm version minor -m 'Release v%s' && npm publish --access public && git push --follow-tags",
-    "release:major": "npm version major -m 'Release v%s' && npm publish --access public && git push --follow-tags",
-    "release:beta": "npm version prerelease --preid=beta -m 'Release v%s' && npm publish --access public --tag beta && git push --follow-tags"
+    "release:patch": "npm version patch -m 'Release v%s [skip ci]' && npm publish --access public && git push --follow-tags",
+    "release:minor": "npm version minor -m 'Release v%s [skip ci]' && npm publish --access public && git push --follow-tags",
+    "release:major": "npm version major -m 'Release v%s [skip ci]' && npm publish --access public && git push --follow-tags",
+    "release:beta": "npm version prerelease --preid=beta -m 'Release v%s [skip ci]' && npm publish --access public --tag beta && git push --follow-tags"
   },
   "keywords": [
     "labels",
