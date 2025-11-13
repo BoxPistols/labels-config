@@ -36,17 +36,24 @@ export function parseArgs(argv: string[]): ParsedArgs {
 
     if (arg.startsWith('--')) {
       // Long option
-      const nextArg = argv[i + 1]
-
-      if (!nextArg || nextArg.startsWith('-')) {
-        // It's a flag (no value)
-        result.flags.add(arg)
-        i++
+      const parts = arg.split('=', 2);
+      if (parts.length === 2) {
+        // Handles --key=value
+        result.options.set(parts[0], parts[1]);
+        i++;
       } else {
-        // It's an option with value
-        result.options.set(arg, nextArg)
-        i += 2
+        const nextArg = argv[i + 1];
+        if (!nextArg || nextArg.startsWith('-')) {
+          // It's a flag (e.g., --verbose)
+          result.flags.add(arg);
+          i++;
+        } else {
+          // It's an option with a separate value (e.g., --file labels.json)
+          result.options.set(arg, nextArg);
+          i += 2;
+        }
       }
+
     } else if (arg.startsWith('-')) {
       // Short flag
       result.flags.add(arg)
