@@ -2,7 +2,7 @@
 
 ## 概要
 
-`@boxpistols/labels-config` は、GitHub ラベルの包括的な管理システムです。元の `sdpf-frontend-next` リポジトリの `shells/labels.json` アーキテクチャをベースに、npm パッケージおよび CDN 配布対応の OSS として実装されました。
+`@boxpistols/labels-config` は、GitHub ラベルの包括的な管理システムです。npm パッケージおよび CDN 配布対応の OSS として実装されました。
 
 ## 主な機能
 
@@ -21,16 +21,16 @@
 
 ### 3. **設定管理**
 - JSON ベースの設定ファイル
-- 複数のテンプレート（minimal, github, sdpf, agile）
+- 複数のテンプレート（minimal, github, prod, prod-en, prod-ja, react, vue, frontend, agile）
 - レジストリ形式対応
 - カテゴリー分類対応
 
 ### 4. **CLI ツール**
 ```bash
-labels-config init sdpf --file labels.json
+labels-config init prod-ja --file labels.json
 labels-config validate ./labels.json
-labels-config sync --token $GITHUB_TOKEN --owner user --repo repo
-labels-config export --token $GITHUB_TOKEN --owner user --repo repo
+labels-config sync --owner user --repo repo
+labels-config export --owner user --repo repo
 ```
 
 ### 5. **マルチフォーマット配布**
@@ -63,7 +63,7 @@ labels-config/
 │   ├── GETTING_STARTED.md       # スタートガイド
 │   └── API.md                   # API リファレンス
 ├── templates/                   # ラベルテンプレート
-│   └── sdpf-labels.json
+│   └── prod-labels.json
 ├── .github/workflows/           # CI/CD
 │   ├── test.yml                # テスト ワークフロー
 │   └── publish.yml             # 公開 ワークフロー
@@ -115,11 +115,10 @@ await sync.syncLabels(manager.export())
 
 ```bash
 # テンプレートから初期化
-labels-config init sdpf --file labels.json
+labels-config init prod-ja --file labels.json
 
 # GitHub に同期
 labels-config sync \
-  --token $GITHUB_TOKEN \
   --owner user \
   --repo repo \
   --file labels.json
@@ -231,12 +230,11 @@ MIT License - 自由に使用・改変・配布可能
 
 ## 初期作成情報
 
-- **ベース**: sdpf-frontend-next の shells/labels.json
 - **作成日**: 2024-11-12
 - **言語**: TypeScript 5.3+
 - **Node.js**: 18+
 
 ---
 
-このプロジェクトは、元のラベル定義アーキテクチャを保ちながら、スケーラブルな OSS パッケージとして実装されています。
+このプロジェクトは、スケーラブルな OSS パッケージとして実装されています。
 

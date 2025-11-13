@@ -119,11 +119,11 @@ const labels = loader.loadFromString(fileContent)
 ```typescript
 import { CONFIG_TEMPLATES, listTemplates } from '@boxpistols/labels-config/config'
 
-// Get SDPF template
-const sdpfLabels = CONFIG_TEMPLATES.sdpf
+// Get production template (Japanese)
+const prodLabels = CONFIG_TEMPLATES.prod
 
 // List all available templates
-const templates = listTemplates() // ['minimal', 'github', 'sdpf', 'agile']
+const templates = listTemplates() // ['minimal', 'github', 'prod', 'prod-en', 'prod-ja', 'react', 'vue', 'frontend', 'agile']
 
 // Use GitHub standard template
 const githubLabels = CONFIG_TEMPLATES.github
@@ -135,9 +135,9 @@ const githubLabels = CONFIG_TEMPLATES.github
 
 ```bash
 # Create from template
-labels-config init sdpf --file labels.json
+labels-config init prod-ja --file labels.json
 
-# Available templates: minimal, github, sdpf, agile
+# Available templates: minimal, github, prod, prod-en, prod-ja, react, vue, frontend, agile
 labels-config init github --file labels.json
 ```
 

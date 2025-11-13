@@ -46,9 +46,9 @@ Available Templates (9 types, frontend-focused):
   react                              React ecosystem (components, hooks, state management)
   vue                                Vue.js ecosystem (composables, Pinia, router)
   frontend                           General frontend development (framework-agnostic)
-  sdpf-en                            Production project (14 labels, English)
-  sdpf-ja                            Production project (14 labels, Japanese)
-  sdpf                               Production project (alias for sdpf-ja)
+  prod-en                            Production project (14 labels, English)
+  prod-ja                            Production project (14 labels, Japanese)
+  prod                               Production project (alias for prod-ja)
   agile                              Agile/Scrum workflow
 
 Sync Modes:

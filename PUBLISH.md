@@ -1,244 +1,222 @@
-# npm Package 公開・更新手順
+# Publishing Guide
 
-## 初回セットアップ
+このパッケージには3つのリリース方法があります。
 
-### 1. npm アカウント作成
+---
+
+## 方法1: ローカルから手動リリース（即座に使える）
+
+### 前提条件
+
+npm に認証済みであること：
 ```bash
-# npm にアカウントがない場合
-https://www.npmjs.com/signup
-
-# npm にログイン
 npm login
 ```
 
-### 2. パッケージ名の確認
-`package.json` の `name` フィールドを確認:
-```json
-{
-  "name": "labels-config-boxpistols"
-}
+### リリースコマンド
+
+```bash
+# パッチリリース (0.2.0 → 0.2.1)
+npm run release:patch
+
+# マイナーリリース (0.2.0 → 0.3.0)
+npm run release:minor
+
+# メジャーリリース (0.2.0 → 1.0.0)
+npm run release:major
+
+# ベータリリース (0.2.0 → 0.2.1-beta.0)
+npm run release:beta
 ```
+
+### 実行内容
+
+各コマンドは以下を自動実行します：
+
+1. バージョン番号を更新（package.json と src/version.ts）
+2. コミット作成（"Release vX.X.X"）
+3. Git タグ作成
+4. ビルド実行
+5. npm に公開
+6. Git にプッシュ（タグ含む）
+
+**注意:** コミットメッセージに `[skip ci]` を含めて無限ループを防止
 
 ---
 
-## 公開前の準備
+## 方法2: GitHub Actions で自動リリース（推奨）
 
-### 1. コードの変更を確認
+### 設定
+
+`.github/workflows/auto-release.yml` が設定済み。
+
+### トリガー条件
+
+`main` ブランチに以下のファイルが変更されたプッシュ時：
+- `src/**`
+- `package.json`
+
+### 自動的に実行される内容
+
+1. テスト実行
+2. パッチバージョンを自動アップ（0.2.0 → 0.2.1）
+3. ビルド
+4. npm に公開
+5. Git にプッシュ
+
+### リリースをスキップしたい場合
+
+コミットメッセージに以下を含める：
+
 ```bash
-git status
-git diff
+git commit -m "fix: something [skip ci]"
+# または
+git commit -m "docs: update [no release]"
 ```
 
-### 2. ビルド
-```bash
-npm run build
-```
+### 必要な Secrets
 
-### 3. バージョン確認
-現在のバージョン: `0.1.0`
+GitHub Settings → Secrets → Actions で設定：
+
+- `NPM_TOKEN`: npm アクセストークン
+  - https://www.npmjs.com/settings/YOUR_USERNAME/tokens
+  - "Automation" トークンを作成
 
 ---
 
-## バージョン更新方法
+## 方法3: GitHub UI から手動リリース
 
-### パッチバージョン（バグ修正: 0.1.0 → 0.1.1）
-```bash
-npm version patch
-```
+### 設定
 
-### マイナーバージョン（機能追加: 0.1.0 → 0.2.0）
-```bash
-npm version minor
-```
+`.github/workflows/manual-release.yml` が設定済み。
 
-### メジャーバージョン（破壊的変更: 0.1.0 → 1.0.0）
-```bash
-npm version major
-```
+### 使い方
 
-**`npm version` コマンドは自動的に:**
-- package.json のバージョンを更新
-- git commit を作成
-- git tag を作成
+1. GitHub リポジトリページで `Actions` タブを開く
+2. 左サイドバーから `Manual Release` を選択
+3. `Run workflow` をクリック
+4. バージョンタイプを選択：
+   - **patch**: バグ修正（0.2.0 → 0.2.1）
+   - **minor**: 新機能（0.2.0 → 0.3.0）
+   - **major**: 破壊的変更（0.2.0 → 1.0.0）
+   - **prerelease**: ベータ版（0.2.0 → 0.2.1-beta.0）
+5. `Run workflow` を実行
 
----
+### 実行内容
 
-## npm に公開
-
-### 1. ドライラン（実際には公開しない）
-```bash
-npm publish --dry-run
-```
-
-出力を確認して、公開されるファイルが正しいか確認。
-
-### 2. 本番公開
-```bash
-npm publish
-```
-
-### 3. スコープ付きパッケージの場合（初回のみ）
-```bash
-npm publish --access public
-```
+1. テスト実行
+2. 選択したバージョンタイプでバージョンアップ
+3. ビルド
+4. npm に公開（prerelease は `--tag beta`）
+5. Git にプッシュ
+6. GitHub Release を自動作成
 
 ---
 
-## 公開後の確認
+## バージョニング戦略
 
-### 1. npm レジストリで確認
-```bash
-# パッケージ情報を表示
-npm info labels-config-boxpistols
+### Semantic Versioning (semver) に従う
 
-# 最新バージョンを確認
-npm view labels-config-boxpistols version
-```
+\`\`\`
+MAJOR.MINOR.PATCH
 
-### 2. Web で確認
-https://www.npmjs.com/package/labels-config-boxpistols
+例: 0.2.0
+     │ │ └─ パッチ: バグ修正
+     │ └─── マイナー: 後方互換性のある新機能
+     └───── メジャー: 破壊的変更
+\`\`\`
 
-### 3. インストールテスト
-```bash
-# 別のディレクトリでテスト
-mkdir test-install && cd test-install
-npm install labels-config-boxpistols
-labels-config help
-```
+### いつ何を使うか
 
----
-
-## 完全な更新フロー（推奨）
-
-```bash
-# 1. 最新のコードをプル
-git pull origin main
-
-# 2. 依存関係を更新
-npm install
-
-# 3. ビルド
-npm run build
-
-# 4. テスト（もしあれば）
-npm test
-
-# 5. バージョンを更新
-npm version patch  # または minor/major
-
-# 6. ドライランで確認
-npm publish --dry-run
-
-# 7. 公開
-npm publish
-
-# 8. Git にプッシュ（タグも含む）
-git push && git push --tags
-```
+| 変更内容 | バージョン | コマンド |
+|---------|-----------|---------|
+| バグ修正 | patch | \`npm run release:patch\` |
+| 新機能（後方互換） | minor | \`npm run release:minor\` |
+| 破壊的変更 | major | \`npm run release:major\` |
+| テスト版 | prerelease | \`npm run release:beta\` |
 
 ---
 
 ## トラブルシューティング
 
-### "You must be logged in to publish packages"
-```bash
+### npm publish が 403 エラー
+
+\`\`\`bash
+# ログイン状態を確認
+npm whoami
+
+# 再ログイン
 npm login
-# ユーザー名、パスワード、メールアドレスを入力
-```
 
-### "You do not have permission to publish"
-```bash
-# パッケージ名が既に使用されている場合
-# package.json の name を変更
-```
+# スコープパッケージの権限確認
+npm access list packages @boxpistols
+\`\`\`
 
-### "Cannot publish over previously published version"
-```bash
-# バージョンを更新
-npm version patch
-```
+### Git push が失敗
 
-### ビルドファイルが含まれていない
-```bash
-# package.json の files フィールドを確認
-{
-  "files": [
-    "dist",
-    "templates"
-  ]
-}
-```
+\`\`\`bash
+# リモートの状態を確認
+git fetch origin
+git status
+
+# リモートより遅れている場合
+git pull --rebase
+npm run release:patch
+\`\`\`
+
+### CI/CD でリリースが失敗
+
+1. GitHub Secrets に \`NPM_TOKEN\` が設定されているか確認
+2. npm トークンが有効期限切れでないか確認
+3. Actions のログでエラー内容を確認
 
 ---
 
-## 自動化（GitHub Actions）
+## 推奨ワークフロー
 
-### .github/workflows/publish.yml を作成
+### 開発フロー
 
-```yaml
-name: Publish to npm
+\`\`\`bash
+# 1. 機能ブランチで開発
+git checkout -b feature/new-feature
 
-on:
-  release:
-    types: [created]
+# 2. 変更をコミット
+git commit -m "feat: add new feature"
 
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+# 3. main にマージ
+git checkout main
+git merge feature/new-feature
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
+# 4. main にプッシュ（自動リリースが動く）
+git push origin main
+\`\`\`
 
-      - name: Install dependencies
-        run: npm install
+### 手動リリースが必要な場合
 
-      - name: Build
-        run: npm run build
+\`\`\`bash
+# メジャーバージョンアップなど、慎重に行いたい場合
+npm run release:major
 
-      - name: Publish to npm
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-```
-
-**NPM_TOKEN の設定:**
-1. https://www.npmjs.com/settings/your-username/tokens で Access Token を作成
-2. GitHub リポジトリの Settings → Secrets → Actions → New repository secret
-3. Name: `NPM_TOKEN`, Value: 作成したトークン
+# または GitHub UI から Manual Release を実行
+\`\`\`
 
 ---
 
-## クイックリファレンス
+## チェックリスト
 
-| コマンド | 説明 |
-|---------|------|
-| `npm login` | npm にログイン |
-| `npm whoami` | ログイン中のユーザーを確認 |
-| `npm version patch` | パッチバージョンを上げる (0.1.0 → 0.1.1) |
-| `npm version minor` | マイナーバージョンを上げる (0.1.0 → 0.2.0) |
-| `npm version major` | メジャーバージョンを上げる (0.1.0 → 1.0.0) |
-| `npm publish --dry-run` | 公開のドライラン |
-| `npm publish` | npm に公開 |
-| `npm unpublish <package>@<version>` | バージョンを削除（24時間以内のみ） |
+リリース前に確認：
+
+- [ ] CHANGELOG.md を更新（該当する場合）
+- [ ] README の例が最新バージョンに対応
+- [ ] ビルドが成功する（\`npm run build\`）
+- [ ] テストが通る（\`npm test\`）
+- [ ] 型チェックが通る（\`npm run type-check\`）
+- [ ] ドキュメントが更新されている
 
 ---
 
-## セマンティックバージョニング
+## 参考リンク
 
-- **MAJOR**: 破壊的変更（API の変更など）
-- **MINOR**: 機能追加（後方互換性あり）
-- **PATCH**: バグ修正（後方互換性あり）
-
-例:
-- `0.1.0` → `0.1.1` : バグ修正
-- `0.1.0` → `0.2.0` : 新機能追加
-- `0.1.0` → `1.0.0` : 破壊的変更
-
----
-
-**現在のバージョン: 0.1.0**
+- [npm Semantic Versioning](https://docs.npmjs.com/about-semantic-versioning)
+- [npm version コマンド](https://docs.npmjs.com/cli/v9/commands/npm-version)
+- [GitHub Actions ドキュメント](https://docs.github.com/en/actions)
