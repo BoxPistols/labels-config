@@ -2,6 +2,17 @@
 
 このディレクトリには、`@boxpistols/labels-config` の実際の使用例があります。
 
+## Minimal Template Example
+
+### [`minimal-template-output.json`](./minimal-template-output.json)
+
+`labels-config init minimal` コマンドの出力例。最小限の3ラベル構成：
+- bug (赤)
+- feature (緑)
+- documentation (青)
+
+基本的なプロジェクトに最適です。
+
 ## Production Template Example
 
 ### JSON ファイル

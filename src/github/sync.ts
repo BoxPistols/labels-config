@@ -37,6 +37,7 @@ export interface SyncResult {
 }
 
 export class GitHubLabelSync {
+  private static readonly BATCH_SIZE = 5
   private client: GitHubClient
   private options: GitHubSyncOptions
 
@@ -55,7 +56,7 @@ export class GitHubLabelSync {
   }
 
   /**
-   * Sync labels to GitHub repository
+   * Sync labels to GitHub repository with batch operations for better performance
    */
   async syncLabels(localLabels: LabelConfig[]): Promise<SyncResult> {
     this.log('Fetching remote labels...')
@@ -72,57 +73,101 @@ export class GitHubLabelSync {
     const remoteLabelMap = new Map(remoteLabels.map((label) => [label.name.toLowerCase(), label]))
     const localLabelMap = new Map(localLabels.map((label) => [label.name.toLowerCase(), label]))
 
-    // Process local labels
+    // Categorize operations
+    const toCreate: LabelConfig[] = []
+    const toUpdate: Array<{ current: string; updated: LabelConfig }> = []
+    const toDelete: string[] = []
+
+    // Determine which labels need to be created or updated
     for (const label of localLabels) {
       const remoteLabel = remoteLabelMap.get(label.name.toLowerCase())
 
-      try {
-        if (!remoteLabel) {
-          // Create new label
-          if (!this.options.dryRun) {
-            await this.client.createLabel(label)
-          }
-          result.created.push(label)
-          this.log(`Created label: ${label.name}`)
-        } else if (this.hasChanges(label, remoteLabel)) {
-          // Update existing label
-          if (!this.options.dryRun) {
-            await this.client.updateLabel(remoteLabel.name, label)
-          }
-          result.updated.push(label)
-          this.log(`Updated label: ${label.name}`)
-        } else {
-          // No changes needed
-          result.unchanged.push(label)
-          this.log(`Unchanged label: ${label.name}`)
-        }
-      } catch (error) {
-        result.errors.push({
-          name: label.name,
-          error: error instanceof Error ? error.message : String(error)
-        })
-        this.log(`Error processing label "${label.name}": ${error}`)
+      if (!remoteLabel) {
+        toCreate.push(label)
+      } else if (this.hasChanges(label, remoteLabel)) {
+        toUpdate.push({ current: remoteLabel.name, updated: label })
+      } else {
+        result.unchanged.push(label)
+        this.log(`Unchanged label: ${label.name}`)
       }
     }
 
-    // Handle extra remote labels
+    // Determine which labels need to be deleted
     if (this.options.deleteExtra) {
       for (const remoteLabel of remoteLabels) {
         if (!localLabelMap.has(remoteLabel.name.toLowerCase())) {
-          try {
-            if (!this.options.dryRun) {
-              await this.client.deleteLabel(remoteLabel.name)
-            }
-            result.deleted.push(remoteLabel.name)
-            this.log(`Deleted label: ${remoteLabel.name}`)
-          } catch (error) {
-            result.errors.push({
-              name: remoteLabel.name,
-              error: error instanceof Error ? error.message : String(error)
-            })
-          }
+          toDelete.push(remoteLabel.name)
         }
       }
+    }
+
+    // Execute operations in batches for better performance
+    if (!this.options.dryRun) {
+      // Process creates in parallel
+      for (let i = 0; i < toCreate.length; i += GitHubLabelSync.BATCH_SIZE) {
+        const batch = toCreate.slice(i, i + GitHubLabelSync.BATCH_SIZE)
+        const promises = batch.map(async (label) => {
+          try {
+            await this.client.createLabel(label)
+            result.created.push(label)
+            this.log(`Created label: ${label.name}`)
+          } catch (error) {
+            result.errors.push({
+              name: label.name,
+              error: error instanceof Error ? error.message : String(error)
+            })
+            this.log(`Error creating label "${label.name}": ${error}`)
+          }
+        })
+        await Promise.all(promises)
+      }
+
+      // Process updates in parallel
+      for (let i = 0; i < toUpdate.length; i += GitHubLabelSync.BATCH_SIZE) {
+        const batch = toUpdate.slice(i, i + GitHubLabelSync.BATCH_SIZE)
+        const promises = batch.map(async ({ current, updated }) => {
+          try {
+            await this.client.updateLabel(current, updated)
+            result.updated.push(updated)
+            this.log(`Updated label: ${updated.name}`)
+          } catch (error) {
+            result.errors.push({
+              name: updated.name,
+              error: error instanceof Error ? error.message : String(error)
+            })
+            this.log(`Error updating label "${updated.name}": ${error}`)
+          }
+        })
+        await Promise.all(promises)
+      }
+
+      // Process deletes in parallel
+      for (let i = 0; i < toDelete.length; i += GitHubLabelSync.BATCH_SIZE) {
+        const batch = toDelete.slice(i, i + GitHubLabelSync.BATCH_SIZE)
+        const promises = batch.map(async (name) => {
+          try {
+            await this.client.deleteLabel(name)
+            result.deleted.push(name)
+            this.log(`Deleted label: ${name}`)
+          } catch (error) {
+            result.errors.push({
+              name,
+              error: error instanceof Error ? error.message : String(error)
+            })
+            this.log(`Error deleting label "${name}": ${error}`)
+          }
+        })
+        await Promise.all(promises)
+      }
+    } else {
+      // Dry run mode - just populate results
+      result.created.push(...toCreate)
+      result.updated.push(...toUpdate.map(op => op.updated))
+      result.deleted.push(...toDelete)
+
+      toCreate.forEach(label => this.log(`[DRY RUN] Would create label: ${label.name}`))
+      toUpdate.forEach(({updated}) => this.log(`[DRY RUN] Would update label: ${updated.name}`))
+      toDelete.forEach(name => this.log(`[DRY RUN] Would delete label: ${name}`))
     }
 
     return result
