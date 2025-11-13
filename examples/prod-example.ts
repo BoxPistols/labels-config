@@ -46,7 +46,7 @@ results.forEach((label) => {
  * Template comparison
  */
 console.log('\n\nAvailable Templates:')
-const templates = ['minimal', 'github', 'prod', 'prod-en', 'prod-ja', 'agile'] as const
+const templates = ['minimal', 'github', 'prod', 'prod-en', 'prod-ja', 'react', 'vue', 'frontend', 'agile'] as const
 templates.forEach((template) => {
   const labels = CONFIG_TEMPLATES[template]
   console.log(`  • ${template.padEnd(10)}: ${labels.length} labels`)
