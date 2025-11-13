@@ -111,18 +111,21 @@ async function validateCommand(): Promise<void> {
       return
     } else {
       console.log(error('Validation errors found:'))
-      const duplicateNames = (result.errors as any).duplicateNames
-      if (duplicateNames && duplicateNames.length > 0) {
-        console.log(colorize(`  • Duplicate names: ${duplicateNames.join(', ')}`, 'red'))
+      const errors = result.errors as Partial<{
+        duplicateNames: string[]
+        duplicateColors: string[]
+        validationErrors: Array<{ path: (string | number)[]; message: string }>
+      }>
+
+      if (errors.duplicateNames && errors.duplicateNames.length > 0) {
+        console.log(colorize(`  • Duplicate names: ${errors.duplicateNames.join(', ')}`, 'red'))
       }
-      const duplicateColors = (result.errors as any).duplicateColors
-      if (duplicateColors && duplicateColors.length > 0) {
-        console.log(colorize(`  • Duplicate colors: ${duplicateColors.join(', ')}`, 'red'))
+      if (errors.duplicateColors && errors.duplicateColors.length > 0) {
+        console.log(colorize(`  • Duplicate colors: ${errors.duplicateColors.join(', ')}`, 'red'))
       }
-      const validationErrors = (result.errors as any).validationErrors
-      if (validationErrors && validationErrors.length > 0) {
+      if (errors.validationErrors && errors.validationErrors.length > 0) {
         console.log(colorize('  • Validation errors:', 'red'))
-        validationErrors.forEach((err: any) => {
+        errors.validationErrors.forEach((err) => {
           console.log(`    ${err.path.join('.')}: ${err.message}`)
         })
       }

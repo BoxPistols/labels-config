@@ -37,6 +37,7 @@ export interface SyncResult {
 }
 
 export class GitHubLabelSync {
+  private static readonly BATCH_SIZE = 5
   private client: GitHubClient
   private options: GitHubSyncOptions
 
@@ -102,10 +103,9 @@ export class GitHubLabelSync {
 
     // Execute operations in batches for better performance
     if (!this.options.dryRun) {
-      // Process creates in parallel (batch of 5)
-      const BATCH_SIZE = 5
-      for (let i = 0; i < toCreate.length; i += BATCH_SIZE) {
-        const batch = toCreate.slice(i, i + BATCH_SIZE)
+      // Process creates in parallel
+      for (let i = 0; i < toCreate.length; i += GitHubLabelSync.BATCH_SIZE) {
+        const batch = toCreate.slice(i, i + GitHubLabelSync.BATCH_SIZE)
         const promises = batch.map(async (label) => {
           try {
             await this.client.createLabel(label)
@@ -122,9 +122,9 @@ export class GitHubLabelSync {
         await Promise.all(promises)
       }
 
-      // Process updates in parallel (batch of 5)
-      for (let i = 0; i < toUpdate.length; i += BATCH_SIZE) {
-        const batch = toUpdate.slice(i, i + BATCH_SIZE)
+      // Process updates in parallel
+      for (let i = 0; i < toUpdate.length; i += GitHubLabelSync.BATCH_SIZE) {
+        const batch = toUpdate.slice(i, i + GitHubLabelSync.BATCH_SIZE)
         const promises = batch.map(async ({ current, updated }) => {
           try {
             await this.client.updateLabel(current, updated)
@@ -141,9 +141,9 @@ export class GitHubLabelSync {
         await Promise.all(promises)
       }
 
-      // Process deletes in parallel (batch of 5)
-      for (let i = 0; i < toDelete.length; i += BATCH_SIZE) {
-        const batch = toDelete.slice(i, i + BATCH_SIZE)
+      // Process deletes in parallel
+      for (let i = 0; i < toDelete.length; i += GitHubLabelSync.BATCH_SIZE) {
+        const batch = toDelete.slice(i, i + GitHubLabelSync.BATCH_SIZE)
         const promises = batch.map(async (name) => {
           try {
             await this.client.deleteLabel(name)
