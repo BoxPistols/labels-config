@@ -7,3 +7,6 @@ dist
 .turbo
 coverage
 .vitest
+
+# Generated files
+labels.json
