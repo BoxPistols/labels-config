@@ -11,9 +11,10 @@ import { ConfigLoader } from './config/loader'
 import { GitHubLabelSync } from './github/sync'
 import { validateWithDetails } from './validation'
 import { CONFIG_TEMPLATES, listTemplates } from './config/templates'
+import { parseArgs, getRequiredOption, getOption, hasFlag, getPositional } from './utils/args'
 
-const args = process.argv.slice(2)
-const command = args[0]
+const rawArgs = process.argv.slice(2)
+const parsedArgs = parseArgs(rawArgs)
 
 function printUsage(): void {
   console.log(`
@@ -80,15 +81,34 @@ Examples:
 }
 
 async function validateCommand(): Promise<void> {
-  const file = args[1]
+  const file = getPositional(parsedArgs, 0)
+
   if (!file) {
     console.error('Error: File path required')
+    console.error('Usage: labels-config validate <file>')
     process.exit(1)
   }
 
   try {
+    // Check if file exists
+    try {
+      await fs.access(file)
+    } catch {
+      console.error(`Error: File not found: ${file}`)
+      process.exit(1)
+    }
+
     const content = await fs.readFile(file, 'utf-8')
-    const data = JSON.parse(content)
+
+    let data: unknown
+    try {
+      data = JSON.parse(content)
+    } catch (error) {
+      console.error(`Error: Invalid JSON in file: ${file}`)
+      console.error(error instanceof Error ? error.message : String(error))
+      process.exit(1)
+    }
+
     const result = validateWithDetails(data)
 
     console.log(`\n✓ Validating: ${file}`)
@@ -96,6 +116,7 @@ async function validateCommand(): Promise<void> {
 
     if (result.valid) {
       console.log('✓ Configuration is valid')
+      process.exit(0)
     } else {
       console.log('✗ Validation errors found:')
       const duplicateNames = (result.errors as any).duplicateNames
@@ -113,6 +134,7 @@ async function validateCommand(): Promise<void> {
           console.log(`    ${err.path.join('.')}: ${err.message}`)
         })
       }
+      process.exit(1)
     }
   } catch (error) {
     console.error(`Error: ${error instanceof Error ? error.message : String(error)}`)
@@ -121,22 +143,33 @@ async function validateCommand(): Promise<void> {
 }
 
 async function syncCommand(): Promise<void> {
-  const owner = args[args.indexOf('--owner') + 1]
-  const repo = args[args.indexOf('--repo') + 1]
-  const file = args[args.indexOf('--file') + 1]
-  const dryRun = args.includes('--dry-run')
-  const deleteExtra = args.includes('--delete-extra')
-  const verbose = args.includes('--verbose')
-
-  if (!owner || !repo || !file) {
-    console.error('Error: --owner, --repo, and --file are required')
-    process.exit(1)
-  }
-
   try {
+    const owner = getRequiredOption(parsedArgs, '--owner', 'Error: --owner is required for sync command')
+    const repo = getRequiredOption(parsedArgs, '--repo', 'Error: --repo is required for sync command')
+    const file = getRequiredOption(parsedArgs, '--file', 'Error: --file is required for sync command')
+    const dryRun = hasFlag(parsedArgs, '--dry-run')
+    const deleteExtra = hasFlag(parsedArgs, '--delete-extra')
+    const verbose = hasFlag(parsedArgs, '--verbose')
+
+    // Check if file exists
+    try {
+      await fs.access(file)
+    } catch {
+      console.error(`Error: File not found: ${file}`)
+      process.exit(1)
+    }
+
     const content = await fs.readFile(file, 'utf-8')
-    const loader = new ConfigLoader()
-    const labels = loader.loadFromString(content)
+
+    let labels
+    try {
+      const loader = new ConfigLoader()
+      labels = loader.loadFromString(content)
+    } catch (error) {
+      console.error(`Error: Failed to load labels from file: ${file}`)
+      console.error(error instanceof Error ? error.message : String(error))
+      process.exit(1)
+    }
 
     const sync = new GitHubLabelSync({
       owner,
@@ -160,6 +193,7 @@ async function syncCommand(): Promise<void> {
       result.errors.forEach((error) => {
         console.log(`  - ${error.name}: ${error.error}`)
       })
+      process.exit(1)
     }
   } catch (error) {
     console.error(`Error: ${error instanceof Error ? error.message : String(error)}`)
@@ -168,16 +202,11 @@ async function syncCommand(): Promise<void> {
 }
 
 async function exportCommand(): Promise<void> {
-  const owner = args[args.indexOf('--owner') + 1]
-  const repo = args[args.indexOf('--repo') + 1]
-  const file = args[args.indexOf('--file') + 1] || 'labels.json'
-
-  if (!owner || !repo) {
-    console.error('Error: --owner and --repo are required')
-    process.exit(1)
-  }
-
   try {
+    const owner = getRequiredOption(parsedArgs, '--owner', 'Error: --owner is required for export command')
+    const repo = getRequiredOption(parsedArgs, '--repo', 'Error: --repo is required for export command')
+    const file = getOption(parsedArgs, '--file') || 'labels.json'
+
     const sync = new GitHubLabelSync({ owner, repo })
     const labels = await sync.fetchLabels()
 
@@ -193,11 +222,12 @@ async function exportCommand(): Promise<void> {
 }
 
 async function initCommand(): Promise<void> {
-  const template = args[1]
-  const file = args[args.indexOf('--file') + 1] || 'labels.json'
+  const template = getPositional(parsedArgs, 0)
+  const file = getOption(parsedArgs, '--file') || 'labels.json'
 
   if (!template || !listTemplates().includes(template as any)) {
-    console.log(`Error: Invalid template. Available templates: ${listTemplates().join(', ')}`)
+    console.log(`Error: Invalid template "${template || ''}"`)
+    console.log(`Available templates: ${listTemplates().join(', ')}`)
     process.exit(1)
   }
 
@@ -215,7 +245,9 @@ async function initCommand(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  if (!command || command === 'help' || command === '--help' || command === '-h') {
+  const command = parsedArgs.command
+
+  if (!command || command === 'help' || hasFlag(parsedArgs, '--help', '-h')) {
     printUsage()
     return
   }
