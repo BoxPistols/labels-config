@@ -320,7 +320,7 @@ git commit -m "docs: update README [skip ci]"
 
 For maintainers: OIDC publishing requires one-time setup in npm. See the detailed guide:
 
-📖 **[Complete OIDC Setup Guide](./docs/NPM_SETUP.md)**
+📖 **[Complete OIDC Setup Guide (in Japanese)](./docs/NPM_SETUP.md)**
 
 ---
 
