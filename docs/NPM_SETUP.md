@@ -136,6 +136,10 @@ GitHub の Actions タブから "Manual Release" ワークフローを実行：
 
 ## 📚 参考リンク
 
+**プロジェクト内ドキュメント:**
+- [npm Publish 更新フローガイド](./RELEASE_FLOW.md) - リリース方法の詳細
+
+**外部リンク:**
 - [npm: Publishing packages with provenance via GitHub Actions](https://docs.npmjs.com/generating-provenance-statements)
 - [GitHub: Security hardening with OpenID Connect](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect)
 - [npm Blog: Introducing npm package provenance](https://github.blog/2023-04-19-introducing-npm-package-provenance/)

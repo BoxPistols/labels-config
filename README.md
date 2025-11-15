@@ -441,6 +441,8 @@ MIT
 ## Related
 
 - [日本語 README](./README.ja.md)
+- [npm Publish Release Flow (in Japanese)](./docs/RELEASE_FLOW.md)
+- [npm OIDC Setup Guide (in Japanese)](./docs/NPM_SETUP.md)
 
 ---
 
