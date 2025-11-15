@@ -18,6 +18,9 @@ on:
 jobs:
   manual-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
@@ -56,12 +59,10 @@ jobs:
       - name: Publish to npm
         run: |
           if [ "${{ github.event.inputs.version_type }}" == "prerelease" ]; then
-            npm publish --access public --tag beta
+            npm publish --provenance --access public --tag beta
           else
-            npm publish --access public
+            npm publish --provenance --access public
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push changes
         run: git push --follow-tags

@@ -281,6 +281,66 @@ jobs:
 
 ---
 
+## 🔐 Security & Publishing
+
+### Automated npm Publishing with Trusted Publishers (OIDC)
+
+This package uses **npm Trusted Publishers (OIDC)** for secure, automated publishing. No long-lived tokens required!
+
+**Key Features:**
+- ✅ Zero token management - GitHub Actions authenticates automatically
+- ✅ Enhanced security - No risk of token leakage
+- ✅ Automatic provenance - Package authenticity verification
+- ✅ Auto-release on merge - Patch version published when merging to main
+
+### How It Works
+
+**Automatic Release (main branch):**
+```bash
+# When you merge to main, the system automatically:
+# 1. Bumps the patch version (e.g., 0.2.0 → 0.2.1)
+# 2. Builds the package
+# 3. Publishes to npm with provenance
+# 4. Pushes the version tag
+```
+
+**Manual Release:**
+Use GitHub Actions UI to trigger manual releases with custom version bumps:
+- Navigate to **Actions** → **Manual Release**
+- Choose version type: `patch` / `minor` / `major` / `prerelease`
+- Run the workflow
+
+**Skip Auto-Release:**
+Include `[skip ci]` or `[no release]` in your commit message:
+```bash
+git commit -m "docs: update README [skip ci]"
+```
+
+### Setup Required
+
+For maintainers: OIDC publishing requires one-time setup in npm. See the detailed guide:
+
+📖 **[Complete OIDC Setup Guide (in Japanese)](./docs/NPM_SETUP.md)**
+
+> **Note:** npm Trusted Publisher setup must be done via [npmjs.com](https://www.npmjs.com/) Web UI.
+> CLI/terminal configuration is not currently supported by npm.
+
+### Migration from Local Release Scripts
+
+The following npm scripts have been **removed** (now automated via GitHub Actions):
+
+```bash
+# 🚫 No longer available
+npm run release:patch
+npm run release:minor
+npm run release:major
+npm run release:beta
+```
+
+All releases are now handled automatically through GitHub Actions workflows.
+
+---
+
 ## Troubleshooting
 
 ### Authentication failed
@@ -381,6 +441,8 @@ MIT
 ## Related
 
 - [日本語 README](./README.ja.md)
+- [npm Publish Release Flow (in Japanese)](./docs/RELEASE_FLOW.md)
+- [npm OIDC Setup Guide (in Japanese)](./docs/NPM_SETUP.md)
 
 ---
 
