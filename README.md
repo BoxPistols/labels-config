@@ -322,6 +322,23 @@ For maintainers: OIDC publishing requires one-time setup in npm. See the detaile
 
 📖 **[Complete OIDC Setup Guide (in Japanese)](./docs/NPM_SETUP.md)**
 
+> **Note:** npm Trusted Publisher setup must be done via [npmjs.com](https://www.npmjs.com/) Web UI.
+> CLI/terminal configuration is not currently supported by npm.
+
+### Migration from Local Release Scripts
+
+The following npm scripts have been **removed** (now automated via GitHub Actions):
+
+```bash
+# 🚫 No longer available
+npm run release:patch
+npm run release:minor
+npm run release:major
+npm run release:beta
+```
+
+All releases are now handled automatically through GitHub Actions workflows.
+
 ---
 
 ## Troubleshooting

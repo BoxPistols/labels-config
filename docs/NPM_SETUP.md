@@ -3,6 +3,12 @@
 このプロジェクトは、npm の **Trusted Publishers (OIDC)** 方式を使用して自動的にパッケージを公開しています。
 従来の長期有効なトークンではなく、GitHub Actions が実行時に一時的な認証情報を取得する方式です。
 
+> **⚠️ 重要な注意事項**
+>
+> npm の Trusted Publisher 設定は **Web UI からのみ可能**です。
+> 現時点では npm CLI やターミナルから設定することはできません。
+> 以下の手順に従って、[npmjs.com](https://www.npmjs.com/) から設定してください。
+
 ## 🔐 セキュリティ強化について
 
 ### npm の新しいセキュリティポリシー（2024年〜）
@@ -141,6 +147,23 @@ GitHub の Actions タブから "Manual Release" ワークフローを実行：
 1. ✅ Trusted Publisher の設定を完了
 2. ✅ ワークフローが正常に動作することを確認
 3. ✅ GitHub リポジトリの Settings → Secrets から `NPM_TOKEN` を削除（もう不要です）
+4. ✅ `package.json` の `release:*` スクリプトは廃止されました。今後のリリースは GitHub Actions ワークフロー経由で行います。
+
+### 廃止されたローカルスクリプト
+
+以下のスクリプトは削除されました（GitHub Actions で自動化されているため）：
+
+```bash
+# 🚫 これらのコマンドはもう使用しません
+npm run release:patch  # → GitHub Actions の auto-release が自動実行
+npm run release:minor  # → GitHub Actions の manual-release で実行
+npm run release:major  # → GitHub Actions の manual-release で実行
+npm run release:beta   # → GitHub Actions の manual-release で実行
+```
+
+**新しいリリース方法：**
+- **自動**: main へマージすると自動的にパッチバージョンがリリース
+- **手動**: GitHub Actions UI から Manual Release ワークフローを実行
 
 ## 💡 ベストプラクティス
 
