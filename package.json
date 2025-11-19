@@ -1,6 +1,6 @@
 {
   "name": "@asagiri-design/labels-config",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Terminal-first label management system for GitHub repositories using gh CLI - No token required",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
