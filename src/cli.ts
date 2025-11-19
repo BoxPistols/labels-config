@@ -8,7 +8,9 @@
 import { promises as fs } from 'fs'
 import { LabelManager } from './manager'
 import { ConfigLoader } from './config/loader'
+import { BatchConfigLoader } from './config/batch-config'
 import { GitHubLabelSync } from './github/sync'
+import { BatchLabelSync } from './github/batch-sync'
 import { validateWithDetails } from './validation'
 import { CONFIG_TEMPLATES, listTemplates } from './config/templates'
 import { parseArgs, getRequiredOption, getOption, hasFlag, getPositional } from './utils/args'
@@ -23,6 +25,8 @@ function printUsage(): void {
   console.log(header('Commands'))
   console.log('  ' + colorize('validate', 'cyan') + ' <file>           Validate label configuration file')
   console.log('  ' + colorize('sync', 'cyan') + '                     Sync labels to GitHub repository')
+  console.log('  ' + colorize('batch-sync', 'cyan') + '               Sync labels to multiple repositories')
+  console.log('  ' + colorize('batch-config', 'cyan') + ' <file>      Sync using batch configuration file')
   console.log('  ' + colorize('export', 'cyan') + '                   Export labels from GitHub repository')
   console.log('  ' + colorize('init', 'cyan') + ' <template>         Initialize new configuration')
   console.log('  ' + colorize('help', 'cyan') + '                     Show this help message')
@@ -36,6 +40,13 @@ function printUsage(): void {
   console.log('  ' + colorize('--owner', 'green') + ' <owner>         Repository owner (required for sync/export)')
   console.log('  ' + colorize('--repo', 'green') + ' <repo>          Repository name (required for sync/export)')
   console.log('  ' + colorize('--file', 'green') + ' <file>          Configuration file path')
+  console.log('  ' + colorize('--template', 'green') + ' <name>       Template name (for batch-sync)')
+  console.log('  ' + colorize('--org', 'green') + ' <org>            Organization name (for batch-sync)')
+  console.log('  ' + colorize('--user', 'green') + ' <user>          User name (for batch-sync)')
+  console.log('  ' + colorize('--repos', 'green') + ' <repos>        Comma-separated repository list')
+  console.log('  ' + colorize('--parallel', 'green') + ' <num>       Number of parallel executions (default: 3)')
+  console.log('  ' + colorize('--filter-lang', 'green') + ' <lang>   Filter by programming language')
+  console.log('  ' + colorize('--filter-vis', 'green') + ' <vis>     Filter by visibility (public/private/all)')
   console.log('  ' + colorize('--dry-run', 'green') + '              Dry run mode (don\'t make changes)')
   console.log('  ' + colorize('--delete-extra', 'green') + '         Replace mode: delete labels not in config')
   console.log('  ' + colorize('--verbose', 'green') + '              Verbose output')
@@ -63,6 +74,18 @@ function printUsage(): void {
   console.log('')
   console.log('  # Sync with dry run')
   console.log('  ' + colorize('labels-config sync --owner user --repo repo --file labels.json --dry-run', 'gray'))
+  console.log('')
+  console.log('  # Batch sync to all org repositories')
+  console.log('  ' + colorize('labels-config batch-sync --org BoxPistols --template prod-ja --dry-run', 'gray'))
+  console.log('')
+  console.log('  # Batch sync to specific repositories')
+  console.log('  ' + colorize('labels-config batch-sync --repos owner/repo1,owner/repo2 --file labels.json', 'gray'))
+  console.log('')
+  console.log('  # Batch sync with filters')
+  console.log('  ' + colorize('labels-config batch-sync --user BoxPistols --template react --filter-lang TypeScript --filter-vis public', 'gray'))
+  console.log('')
+  console.log('  # Batch sync using config file')
+  console.log('  ' + colorize('labels-config batch-config batch-config.json --dry-run', 'gray'))
   console.log('')
 }
 
@@ -287,6 +310,207 @@ async function initCommand(): Promise<void> {
   }
 }
 
+async function batchSyncCommand(): Promise<void> {
+  const spinner = new Spinner()
+
+  try {
+    // オプション解析
+    const file = getOption(parsedArgs, '--file')
+    const template = getOption(parsedArgs, '--template')
+    const org = getOption(parsedArgs, '--org')
+    const user = getOption(parsedArgs, '--user')
+    const reposOption = getOption(parsedArgs, '--repos')
+    const parallel = parseInt(getOption(parsedArgs, '--parallel') || '3')
+    const filterLang = getOption(parsedArgs, '--filter-lang')
+    const filterVis = getOption(parsedArgs, '--filter-vis')
+    const dryRun = hasFlag(parsedArgs, '--dry-run')
+    const deleteExtra = hasFlag(parsedArgs, '--delete-extra')
+
+    // バリデーション: ラベルソースが指定されているか
+    if (!file && !template) {
+      console.error(error('Error: Either --file or --template is required for batch-sync'))
+      console.log(info('Available templates: ') + listTemplates().map(t => colorize(t, 'magenta')).join(', '))
+      process.exit(1)
+    }
+
+    // バリデーション: リポジトリターゲットが指定されているか
+    if (!org && !user && !reposOption) {
+      console.error(error('Error: One of --org, --user, or --repos is required'))
+      console.log(info('Specify target repositories using:'))
+      console.log('  --org <organization>  (sync all org repos)')
+      console.log('  --user <username>     (sync all user repos)')
+      console.log('  --repos owner/repo1,owner/repo2  (specific repos)')
+      process.exit(1)
+    }
+
+    // ラベルの読み込み
+    let labels: typeof CONFIG_TEMPLATES[keyof typeof CONFIG_TEMPLATES]
+    if (file) {
+      try {
+        await fs.access(file)
+      } catch {
+        console.error(error(`File not found: ${file}`))
+        process.exit(1)
+      }
+
+      spinner.start(`Loading labels from ${file}`)
+      const content = await fs.readFile(file, 'utf-8')
+      const loader = new ConfigLoader()
+      labels = loader.loadFromString(content)
+      spinner.succeed(`Loaded ${labels.length} labels from file`)
+    } else if (template) {
+      if (!listTemplates().includes(template as any)) {
+        console.error(error(`Invalid template "${template}"`))
+        console.log(info('Available templates: ') + listTemplates().map(t => colorize(t, 'magenta')).join(', '))
+        process.exit(1)
+      }
+      spinner.start(`Loading "${template}" template`)
+      labels = CONFIG_TEMPLATES[template as keyof typeof CONFIG_TEMPLATES]
+      spinner.succeed(`Loaded ${labels.length} labels from "${template}" template`)
+    } else {
+      throw new Error('Either --file or --template is required')
+    }
+
+    // リポジトリリストの作成
+    const repositories = reposOption ? reposOption.split(',').map(r => r.trim()) : undefined
+
+    // バッチ同期の設定
+    const batchSync = new BatchLabelSync()
+    const options = {
+      repositories,
+      organization: org,
+      user,
+      template,
+      mode: deleteExtra ? 'replace' as const : 'append' as const,
+      dryRun,
+      parallel,
+      filter: {
+        visibility: filterVis as 'public' | 'private' | 'all' | undefined,
+        language: filterLang,
+        archived: false
+      }
+    }
+
+    const modeText = dryRun ? colorize('[DRY RUN] ', 'yellow') : ''
+    console.log(`\n${modeText}${header('Batch Sync Configuration')}`)
+    console.log(info(`Labels: ${labels.length}`))
+    if (org) console.log(info(`Organization: ${org}`))
+    if (user) console.log(info(`User: ${user}`))
+    if (repositories) console.log(info(`Repositories: ${repositories.length} specified`))
+    if (filterLang) console.log(info(`Filter (language): ${filterLang}`))
+    if (filterVis) console.log(info(`Filter (visibility): ${filterVis}`))
+    console.log(info(`Parallel: ${parallel}`))
+    console.log(info(`Mode: ${deleteExtra ? 'replace' : 'append'}`))
+
+    // バッチ同期の実行
+    const results = await batchSync.syncMultiple(labels, options)
+
+    // サマリー表示
+    const summary = batchSync.generateSummary(results)
+    console.log(summary)
+
+    // エラーがある場合は終了コード1
+    const hasErrors = results.some(r => r.status === 'failed')
+    if (hasErrors) {
+      process.exit(1)
+    }
+  } catch (err) {
+    spinner.fail('Batch sync failed')
+    console.error(error(err instanceof Error ? err.message : String(err)))
+    process.exit(1)
+  }
+}
+
+async function batchConfigCommand(): Promise<void> {
+  const configFile = getPositional(parsedArgs, 0)
+  const dryRun = hasFlag(parsedArgs, '--dry-run')
+  const spinner = new Spinner()
+
+  if (!configFile) {
+    console.error(error('Configuration file path required'))
+    console.error('Usage: labels-config batch-config <file>')
+    console.log(info('Example: labels-config batch-config batch-config.json --dry-run'))
+    process.exit(1)
+  }
+
+  try {
+    // 設定ファイルの読み込み
+    spinner.start(`Loading batch configuration from ${configFile}`)
+    const config = await BatchConfigLoader.load(configFile)
+    spinner.succeed(`Loaded batch configuration with ${config.targets.length} targets`)
+
+    const modeText = dryRun ? colorize('[DRY RUN] ', 'yellow') : ''
+    console.log(`\n${modeText}${header('Batch Configuration')}`)
+    console.log(info(`Version: ${config.version}`))
+    if (config.description) console.log(info(`Description: ${config.description}`))
+    console.log(info(`Targets: ${config.targets.length}`))
+
+    // 各ターゲットを処理
+    let totalSuccess = 0
+    let totalFailed = 0
+
+    for (let i = 0; i < config.targets.length; i++) {
+      const target = config.targets[i]
+      console.log(`\n${header(`Target ${i + 1}/${config.targets.length}`)}`)
+
+      // ラベルの読み込み
+      let labels
+      if (target.file) {
+        spinner.start(`Loading labels from ${target.file}`)
+        const content = await fs.readFile(target.file, 'utf-8')
+        const loader = new ConfigLoader()
+        labels = loader.loadFromString(content)
+        spinner.succeed(`Loaded ${labels.length} labels`)
+      } else if (target.template) {
+        const templateName = target.template || config.defaults?.template
+        if (!templateName || !listTemplates().includes(templateName as any)) {
+          console.error(error(`Invalid template "${templateName}"`))
+          continue
+        }
+        spinner.start(`Loading "${templateName}" template`)
+        labels = CONFIG_TEMPLATES[templateName as keyof typeof CONFIG_TEMPLATES]
+        spinner.succeed(`Loaded ${labels.length} labels`)
+      } else {
+        console.error(error('No template or file specified'))
+        continue
+      }
+
+      // バッチ同期の実行
+      const batchSync = new BatchLabelSync()
+      const options = BatchConfigLoader.targetToOptions(target, config.defaults)
+      options.dryRun = dryRun
+
+      console.log(info(`Mode: ${options.mode}`))
+      if (target.organization) console.log(info(`Organization: ${target.organization}`))
+      if (target.user) console.log(info(`User: ${target.user}`))
+      if (target.repositories) console.log(info(`Repositories: ${target.repositories.length}`))
+
+      const results = await batchSync.syncMultiple(labels, options)
+
+      // 結果の集計
+      const successful = results.filter(r => r.status === 'success').length
+      const failed = results.filter(r => r.status === 'failed').length
+
+      totalSuccess += successful
+      totalFailed += failed
+
+      console.log(success(`Target ${i + 1}: ${successful} successful, ${failed} failed`))
+    }
+
+    // 全体サマリー
+    console.log(`\n${header('Overall Summary')}`)
+    console.log(success(`Total successful: ${totalSuccess}`))
+    if (totalFailed > 0) {
+      console.log(error(`Total failed: ${totalFailed}`))
+      process.exit(1)
+    }
+  } catch (err) {
+    spinner.fail('Batch config execution failed')
+    console.error(error(err instanceof Error ? err.message : String(err)))
+    process.exit(1)
+  }
+}
+
 async function main(): Promise<void> {
   const command = parsedArgs.command
 
@@ -301,6 +525,12 @@ async function main(): Promise<void> {
       break
     case 'sync':
       await syncCommand()
+      break
+    case 'batch-sync':
+      await batchSyncCommand()
+      break
+    case 'batch-config':
+      await batchConfigCommand()
       break
     case 'export':
       await exportCommand()

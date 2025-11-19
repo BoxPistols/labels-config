@@ -8,3 +8,6 @@ export type { GitHubSyncOptions, GitHubLabel } from './sync'
 
 export { GitHubClient } from './client'
 export type { GitHubClientOptions } from './client'
+
+export { BatchLabelSync } from './batch-sync'
+export type { BatchSyncOptions, BatchSyncResult } from './batch-sync'

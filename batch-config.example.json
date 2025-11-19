@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/BoxPistols/labels-config/main/batch-config.schema.json",
+  "version": "1.0.0",
+  "description": "Batch label configuration for multiple repositories",
+  "defaults": {
+    "template": "prod-ja",
+    "mode": "append",
+    "parallel": 3
+  },
+  "targets": [
+    {
+      "organization": "BoxPistols",
+      "filter": {
+        "visibility": "public",
+        "language": "TypeScript",
+        "archived": false
+      },
+      "template": "react",
+      "mode": "append"
+    },
+    {
+      "repositories": [
+        "BoxPistols/labels-config",
+        "BoxPistols/my-project"
+      ],
+      "template": "prod-ja",
+      "mode": "replace"
+    },
+    {
+      "user": "BoxPistols",
+      "filter": {
+        "visibility": "private"
+      },
+      "file": "./custom-labels.json"
+    }
+  ]
+}
