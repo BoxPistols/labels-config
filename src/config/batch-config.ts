@@ -2,7 +2,6 @@
  * Batch configuration file parser
  * Supports JSON and YAML batch configurations
  */
-import { LabelConfig } from '../types';
 import { BatchSyncOptions } from '../github/batch-sync';
 
 export interface BatchConfigTarget {
