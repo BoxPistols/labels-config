@@ -3,7 +3,33 @@ title: "GitHubラベル管理を自動化！labels-configでチーム開発を�
 emoji: "🏷️"
 type: "tech"
 topics: ["github", "cli", "nodejs", "npm", "開発効率化"]
-published: false
+published: true
+---
+
+# TL;DR - 忙しい人向け（1分で導入）
+
+:::message
+**前提:** GitHub CLI (`gh`) がインストール・認証済みであること
+:::
+
+```bash
+# 1. インストール
+npm install -g @asagiri-design/labels-config
+
+# 2. 日本語ラベルテンプレートで設定ファイル作成
+labels-config init prod-ja --file labels.json
+
+# 3. ドライランで確認（実際には変更しない）
+labels-config sync --owner YOUR_ORG --repo YOUR_REPO --file labels.json --delete-extra --dry-run
+
+# 4. 実行（既存の英語ラベルを削除して日本語ラベルに置き換え）
+labels-config sync --owner YOUR_ORG --repo YOUR_REPO --file labels.json --delete-extra
+```
+
+**ポイント:**
+- `--delete-extra` で設定ファイルにないラベル（GitHubデフォルトの英語ラベル等）を削除
+- 必ず `--dry-run` で確認してから実行
+
 ---
 
 # はじめに
