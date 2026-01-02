@@ -12,7 +12,7 @@ GitHubのIssueやPRに付けるラベル、チームやプロジェクトで統�
 
 複数のリポジトリを管理していると、ラベルがバラバラになりがちです。新しいリポジトリを作るたびに、手動でラベルを作成するのは面倒ですよね。
 
-そこで今回紹介するのが **`@boxpistols/labels-config`** です。
+そこで今回紹介するのが **`@asagiri-design/labels-config`** です。
 
 **ターミナルから1コマンドで、GitHubリポジトリのラベルを設定ファイルと同期できます。**
 
@@ -47,7 +47,7 @@ gh auth login
 ## Step 2: labels-configをインストール
 
 ```bash
-npm install -g @boxpistols/labels-config
+npm install -g @asagiri-design/labels-config
 ```
 
 インストール確認：
@@ -334,7 +334,7 @@ jobs:
           node-version: '20'
 
       - name: Install labels-config
-        run: npm install -g @boxpistols/labels-config
+        run: npm install -g @asagiri-design/labels-config
 
       - name: Authenticate gh CLI
         env:
@@ -400,8 +400,8 @@ gh api rate_limit
 Node.jsプロジェクト内でプログラマティックに使用することもできます：
 
 ```typescript
-import { GitHubLabelSync } from '@boxpistols/labels-config/github'
-import { CONFIG_TEMPLATES } from '@boxpistols/labels-config/config'
+import { GitHubLabelSync } from '@asagiri-design/labels-config/github'
+import { CONFIG_TEMPLATES } from '@asagiri-design/labels-config/config'
 
 const sync = new GitHubLabelSync({
   owner: 'your-org',
@@ -416,12 +416,12 @@ await sync.syncLabels(labels)
 インストール：
 
 ```bash
-npm install @boxpistols/labels-config
+npm install @asagiri-design/labels-config
 ```
 
 # まとめ
 
-`@boxpistols/labels-config` を使えば：
+`@asagiri-design/labels-config` を使えば：
 
 - **ラベル設定をコードで管理**できる
 - **テンプレートから簡単に**始められる
@@ -437,5 +437,5 @@ GitHub CLIの認証をそのまま使えるので、トークン管理の手間�
 
 ## 関連リンク
 
-- [npm: @boxpistols/labels-config](https://www.npmjs.com/package/@boxpistols/labels-config)
-- [GitHub: boxpistols/labels-config](https://github.com/boxpistols/labels-config)
+- [npm: @asagiri-design/labels-config](https://www.npmjs.com/package/@asagiri-design/labels-config)
+- [GitHub: BoxPistols/labels-config](https://github.com/BoxPistols/labels-config)
