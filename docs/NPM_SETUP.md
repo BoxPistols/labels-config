@@ -52,7 +52,7 @@
 | 項目 | 値 |
 |------|-----|
 | **Provider** | GitHub |
-| **Organization / Repository owner** | `BoxPistols` |
+| **Organization / Repository owner** | `your-org` |
 | **Repository name** | `labels-config` |
 | **Workflow name** | （以下の3つを個別に追加） |
 

@@ -80,7 +80,7 @@ labels-config init prod-ja --file my-labels.json
 
 ```bash
 labels-config sync \
-  --owner BoxPistols \
+  --owner your-org \
   --repo labels-config \
   --file prod-labels-sample.json
 ```

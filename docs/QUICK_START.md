@@ -388,7 +388,7 @@ labels-config batch-sync --help
 - [Getting Started](./GETTING_STARTED.md) - 詳細な使い方
 - [Batch Sync](./BATCH_SYNC.md) - バッチ同期の詳細
 - [API Documentation](./API.md) - プログラマティックな使い方
-- [GitHub Repository](https://github.com/BoxPistols/labels-config) - ソースコード
+- [GitHub Repository](https://github.com/your-org/labels-config) - ソースコード
 
 ---
 

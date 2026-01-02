@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/BoxPistols/labels-config/main/batch-config.schema.json",
+  "$schema": "./batch-config.schema.json",
   "version": "1.0.0",
   "description": "Batch label configuration for multiple repositories",
   "defaults": {
@@ -9,7 +9,7 @@
   },
   "targets": [
     {
-      "organization": "BoxPistols",
+      "organization": "your-org",
       "filter": {
         "visibility": "public",
         "language": "TypeScript",
@@ -20,14 +20,14 @@
     },
     {
       "repositories": [
-        "BoxPistols/labels-config",
-        "BoxPistols/my-project"
+        "your-org/project-a",
+        "your-org/project-b"
       ],
       "template": "prod-ja",
       "mode": "replace"
     },
     {
-      "user": "BoxPistols",
+      "user": "your-username",
       "filter": {
         "visibility": "private"
       },

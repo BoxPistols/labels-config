@@ -75,6 +75,7 @@
     "vitest": "^1.0.4"
   },
   "dependencies": {
+    "zenn-cli": "^0.2.11",
     "zod": "^3.22.4"
   },
   "engines": {

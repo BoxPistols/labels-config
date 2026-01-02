@@ -12,26 +12,26 @@
 
 ```bash
 # 組織の全リポジトリにテンプレートを適用
-labels-config batch-sync --org BoxPistols --template prod-ja
+labels-config batch-sync --org your-org --template prod-ja
 
 # ドライランで確認
-labels-config batch-sync --org BoxPistols --template prod-ja --dry-run
+labels-config batch-sync --org your-org --template prod-ja --dry-run
 
 # 特定の言語でフィルタリング
-labels-config batch-sync --org BoxPistols --template react --filter-lang TypeScript
+labels-config batch-sync --org your-org --template react --filter-lang TypeScript
 
 # 公開リポジトリのみに適用
-labels-config batch-sync --org BoxPistols --template prod-ja --filter-vis public
+labels-config batch-sync --org your-org --template prod-ja --filter-vis public
 ```
 
 #### ユーザーの全リポジトリに同期
 
 ```bash
 # ユーザーの全リポジトリに同期
-labels-config batch-sync --user BoxPistols --template prod-ja
+labels-config batch-sync --user your-username --template prod-ja
 
 # プライベートリポジトリのみ
-labels-config batch-sync --user BoxPistols --template prod-ja --filter-vis private
+labels-config batch-sync --user your-username --template prod-ja --filter-vis private
 ```
 
 #### 特定のリポジトリリストに同期
@@ -39,12 +39,12 @@ labels-config batch-sync --user BoxPistols --template prod-ja --filter-vis priva
 ```bash
 # カスタムラベルファイルを使用
 labels-config batch-sync \
-  --repos BoxPistols/repo1,BoxPistols/repo2,BoxPistols/repo3 \
+  --repos your-org/repo1,your-org/repo2,your-org/repo3 \
   --file ./custom-labels.json
 
 # テンプレートを使用
 labels-config batch-sync \
-  --repos BoxPistols/repo1,BoxPistols/repo2 \
+  --repos your-org/repo1,your-org/repo2 \
   --template prod-ja
 ```
 
@@ -52,8 +52,8 @@ labels-config batch-sync \
 
 | オプション | 説明 | 例 |
 |-----------|------|-----|
-| `--org <name>` | 組織名 | `--org BoxPistols` |
-| `--user <name>` | ユーザー名 | `--user BoxPistols` |
+| `--org <name>` | 組織名 | `--org your-org` |
+| `--user <name>` | ユーザー名 | `--user your-username` |
 | `--repos <list>` | リポジトリリスト（カンマ区切り） | `--repos owner/repo1,owner/repo2` |
 | `--template <name>` | テンプレート名 | `--template prod-ja` |
 | `--file <path>` | カスタムラベルファイル | `--file ./labels.json` |
@@ -74,7 +74,7 @@ labels-config batch-sync \
 ```json
 {
   "version": "1.0.0",
-  "description": "BoxPistols organization batch label sync",
+  "description": "your-org organization batch label sync",
   "defaults": {
     "template": "prod-ja",
     "mode": "append",
@@ -82,7 +82,7 @@ labels-config batch-sync \
   },
   "targets": [
     {
-      "organization": "BoxPistols",
+      "organization": "your-org",
       "filter": {
         "visibility": "public",
         "language": "TypeScript",
@@ -93,14 +93,14 @@ labels-config batch-sync \
     },
     {
       "repositories": [
-        "BoxPistols/labels-config",
-        "BoxPistols/my-project"
+        "your-org/labels-config",
+        "your-org/my-project"
       ],
       "template": "prod-ja",
       "mode": "replace"
     },
     {
-      "user": "BoxPistols",
+      "user": "your-username",
       "filter": {
         "visibility": "private"
       },
@@ -174,7 +174,7 @@ labels-config batch-config batch-config.json --dry-run
 - 設定にないラベルは**保持**
 
 ```bash
-labels-config batch-sync --org BoxPistols --template prod-ja
+labels-config batch-sync --org your-org --template prod-ja
 ```
 
 ### Replace モード
@@ -184,7 +184,7 @@ labels-config batch-sync --org BoxPistols --template prod-ja
 - 設定にないラベルを**削除**
 
 ```bash
-labels-config batch-sync --org BoxPistols --template prod-ja --delete-extra
+labels-config batch-sync --org your-org --template prod-ja --delete-extra
 ```
 
 ---
@@ -195,7 +195,7 @@ labels-config batch-sync --org BoxPistols --template prod-ja --delete-extra
 
 ```bash
 labels-config batch-sync \
-  --org BoxPistols \
+  --org your-org \
   --template react \
   --filter-lang TypeScript \
   --filter-vis public \
@@ -213,17 +213,17 @@ batch-config.json:
   },
   "targets": [
     {
-      "organization": "BoxPistols",
+      "organization": "your-org",
       "filter": { "language": "TypeScript" },
       "template": "react"
     },
     {
-      "organization": "BoxPistols",
+      "organization": "your-org",
       "filter": { "language": "Go" },
       "template": "minimal"
     },
     {
-      "repositories": ["BoxPistols/special-project"],
+      "repositories": ["your-org/special-project"],
       "file": "./special-labels.json",
       "mode": "replace"
     }
@@ -278,10 +278,10 @@ jobs:
 
 ```bash
 # 並列数を増やす（高速化）
-labels-config batch-sync --org BoxPistols --template prod-ja --parallel 10
+labels-config batch-sync --org your-org --template prod-ja --parallel 10
 
 # 並列数を減らす（安定性重視）
-labels-config batch-sync --org BoxPistols --template prod-ja --parallel 1
+labels-config batch-sync --org your-org --template prod-ja --parallel 1
 ```
 
 ### レート制限への対応
@@ -301,9 +301,9 @@ GitHub API のレート制限を考慮して、並列数を調整してくださ
 一部のリポジトリで失敗しても、他のリポジトリの処理は継続されます：
 
 ```
-✅ [1/10] BoxPistols/repo1
-❌ [2/10] BoxPistols/repo2: Permission denied
-✅ [3/10] BoxPistols/repo3
+✅ [1/10] your-org/repo1
+❌ [2/10] your-org/repo2: Permission denied
+✅ [3/10] your-org/repo3
 ...
 
 📊 Batch Sync Summary:
@@ -311,8 +311,8 @@ GitHub API のレート制限を考慮して、並列数を調整してくださ
 ❌ Failed: 2
 
 ❌ Failed repositories:
-  - BoxPistols/repo2: Permission denied
-  - BoxPistols/repo5: Repository not found
+  - your-org/repo2: Permission denied
+  - your-org/repo5: Repository not found
 ```
 
 ### ドライランでの事前確認
@@ -320,7 +320,7 @@ GitHub API のレート制限を考慮して、並列数を調整してくださ
 本番実行前に必ずドライランで確認してください：
 
 ```bash
-labels-config batch-sync --org BoxPistols --template prod-ja --dry-run
+labels-config batch-sync --org your-org --template prod-ja --dry-run
 ```
 
 ---
@@ -339,7 +339,7 @@ A: はい、デフォルトの Append モードで可能です（`--delete-extra
 
 A: はい、`--org` オプションで可能です：
 ```bash
-labels-config batch-sync --org BoxPistols --template prod-ja
+labels-config batch-sync --org your-org --template prod-ja
 ```
 
 ### Q: 特定の条件でフィルタリングできますか？
@@ -356,7 +356,7 @@ A: はい、以下のフィルタが利用可能です：
 ### 権限エラー
 
 ```
-Error: Permission denied for BoxPistols/repo1
+Error: Permission denied for your-org/repo1
 ```
 
 **解決方法:**
@@ -378,13 +378,13 @@ Error: API rate limit exceeded
 ### リポジトリが見つからない
 
 ```
-Error: Repository not found: BoxPistols/repo1
+Error: Repository not found: your-org/repo1
 ```
 
 **解決方法:**
 1. リポジトリ名のスペルを確認
 2. リポジトリへのアクセス権限を確認
-3. `gh repo list BoxPistols` でリポジトリ一覧を確認
+3. `gh repo list your-org` でリポジトリ一覧を確認
 
 ---
 
